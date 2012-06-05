@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="jxs" default="first" basedir=".">
+
+
+  <!-- PROPERTIES -->
+
+  <property name="project" value="${ant.project.name}"/>
+
+  <property name="version_major" value="0"/>
+  <property name="version_minor" value="1"/>
+  <property name="version" value="${version_major}.${version_minor}"/>
+
+  <property name="dir.lib" location="${basedir}/lib"/>
+  <property name="dir.src" location="${basedir}/src"/>
+  <property name="dir.build" location="${basedir}/build"/>
+
+  <property name="dir.lib.main" location="${dir.lib}/main"/>
+  <property name="dir.lib.test" location="${dir.lib}/test"/>
+
+  <property name="dir.src.main" location="${dir.src}/main"/>
+  <property name="dir.src.main.java" location="${dir.src.main}/java"/>
+
+  <property name="dir.src.test" location="${dir.src}/test"/>
+  <property name="dir.src.test.java" location="${dir.src.test}/java"/>
+
+  <property name="dir.build.main" location="${dir.build}/main"/>
+  <property name="dir.build.test" location="${dir.build}/test"/>
+  <property name="dir.build.jar" location="${dir.build}/jar"/>
+
+  <property name="file.jar.main" value="${dir.build.jar}/${project}-${version}.jar"/>
+  <property name="file.jar.test" value="${dir.build.jar}/${project}-${version}-test.jar"/>
+
+
+  <!-- CLASSPATHS -->
+
+  <path id="cp.base">
+  </path>
+
+  <path id="cp.local-main">
+    <fileset dir="${dir.lib.main}">
+      <include name="**/*.jar"/>
+      <exclude name="**/*-test.jar"/>
+    </fileset>
+  </path>
+
+  <path id="cp.local-test">
+    <fileset dir="${dir.lib.test}">
+      <include name="**/*.jar"/>
+      <exclude name="**/*-test.jar"/>
+    </fileset>
+  </path>
+
+  <path id="cp.lib-main">
+    <fileset dir="${dir.build.jar}">
+      <include name="**/*.jar"/>
+      <exclude name="**/*-test.jar"/>
+    </fileset>
+    <path refid="cp.local-main"/>
+  </path>
+
+  <path id="cp.lib-test">
+    <fileset dir="${dir.build.jar}">
+      <include name="**/*-test.jar"/>
+    </fileset>
+    <path refid="cp.local-test"/>
+  </path>
+
+
+  <path id="cp.compile-main">
+    <path refid="cp.local-main"/>
+  </path>
+
+  <path id="cp.compile-test">
+    <path refid="cp.local-main"/>
+    <path refid="cp.local-test"/>
+    <path refid="cp.lib-main"/>
+  </path>
+
+  <path id="cp.run-main">
+    <path refid="cp.lib-main"/>
+  </path>
+
+  <path id="cp.run-test">
+    <path refid="cp.lib-main"/>
+    <path refid="cp.lib-test"/>
+  </path>
+
+
+  <!-- TARGETS -->
+
+  <target name="create.dirs">
+    <mkdir dir="${dir.build.main}"/>
+    <mkdir dir="${dir.build.jar}"/>
+    <mkdir dir="${dir.build.test}"/>
+  </target>
+
+  <target name="compile.main" depends="create.dirs">
+    <javac includeantruntime="false"
+           destdir="${dir.build.main}"
+           debug="true">
+      <src path="${dir.src.main.java}"/>
+      <src path="${dir.build.main}"/>
+      <classpath refid="cp.compile-main"/>
+      <compilerarg value="-Xlint"/>
+    </javac>
+
+    <copy todir="${dir.build.main}">
+      <fileset dir="${dir.src.main.java}">
+        <include name="**/*.hbm.xml"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="jar.main" depends="compile.main">
+    <jar destfile="${file.jar.main}">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+      </manifest>
+      <fileset dir="${dir.build.main}"/>
+    </jar>
+  </target>
+
+  <target name="compile.test" depends="jar.main">
+    <javac includeantruntime="false"
+           destdir="${dir.build.test}"
+           debug="true">
+      <src path="${dir.src.test.java}"/>
+      <classpath refid="cp.compile-test"/>
+      <compilerarg value="-Xlint"/>
+    </javac>
+  </target>
+
+  <target name="jar.test" depends="compile.test">
+    <jar destfile="${file.jar.test}">
+      <fileset dir="${dir.build.test}"/>
+    </jar>
+  </target>
+
+  <target name="compile" depends="compile.main,compile.test"/>
+  <target name="jar" depends="jar.main,jar.test"/>
+
+  <target name="test" depends="jar">
+    <junit failureproperty="junit.failure">
+      <classpath refid="cp.run-test"/>
+
+      <batchtest fork="yes">
+	<formatter type="brief" usefile="false"/>
+	<fileset dir="${dir.build.test}">
+	  <include name="**/*Test*.class"/>
+	</fileset>
+      </batchtest>
+    </junit>
+
+    <fail message="tests failed" if="junit.failure"/>
+  </target>
+
+  <target name="clean">
+    <delete includeEmptyDirs="true" quiet="true">
+      <fileset dir="${dir.build}"/>
+      <fileset dir="." includes="**/*.bak" casesensitive="false"/>
+      <fileset dir="." includes="**/*~ " defaultexcludes="no"/>
+    </delete>
+  </target>
+
+  <target name="run" depends="jar.main">
+    <java fork="true" classname="${cn}">
+      <classpath refid="cp.run-main"/>
+      <arg line="${args}"/>
+    </java>
+  </target>
+
+  <target name="all" depends="test"/>
+  <target name="first" depends="all"/>
+
+</project>
