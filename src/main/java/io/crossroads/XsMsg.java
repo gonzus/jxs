@@ -2,7 +2,6 @@ package io.crossroads;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
-// import com.sun.jna.PointerType;
 
 public class XsMsg
     extends Structure {

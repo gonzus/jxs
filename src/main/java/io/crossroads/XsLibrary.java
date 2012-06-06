@@ -163,11 +163,18 @@ public interface XsLibrary extends Library {
                    XsMsg message,
                    int flags);
 
+    static final short XS_POLLIN = 1;
+    static final short XS_POLLOUT = 2;
+    static final short XS_POLLERR = 4;
+
+    int xs_poll(XsPollItem items[],
+                int nitems,
+                int timeout);
+
     Pointer xs_stopwatch_start();
 
     NativeLong xs_stopwatch_stop(Pointer watch);
 
     // TODO:
-    // 1. xs_poll()
-    // 2. plugins
+    // 1. plugins
 }

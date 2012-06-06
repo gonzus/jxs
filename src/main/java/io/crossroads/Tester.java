@@ -1,6 +1,7 @@
 package io.crossroads;
 
 import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 
 public class Tester {
     public static void main(String [] args) {
@@ -8,6 +9,7 @@ public class Tester {
         tester.allocate();
         tester.testLibrary();
         tester.testVersion();
+        tester.testPoll();
         tester.dispose();
     }
 
@@ -16,16 +18,20 @@ public class Tester {
     
     public void allocate() {
         System.out.println("Starting Tester");
-        xsLibrary = (XsLibrary) Native.loadLibrary("xs_d", XsLibrary.class);
+        xs = (XsLibrary) Native.loadLibrary("xs_d", XsLibrary.class);
+        ctx = xs.xs_init();
+        sock = xs.xs_socket(ctx, xs.XS_REQ);
     }
 
     public void dispose() {
-        xsLibrary = null;
-        System.out.println("Finishing Tester");
+        xs.xs_close(sock);
+        xs.xs_term(ctx);
+        xs = null;
+        System.out.println("Finished Tester");
     }
 
     private boolean testLibrary() {
-        if (xsLibrary == null) {
+        if (xs == null) {
             System.out.println("xsLibrary is null");
             return false;
         }
@@ -37,10 +43,20 @@ public class Tester {
         int[] major = new int[1];
         int[] minor = new int[1];
         int[] patch = new int[1];
-        xsLibrary.xs_version(major, minor, patch);
+        xs.xs_version(major, minor, patch);
         System.out.printf("XS version is %d.%d.%d\n",
                           major[0], minor[0], patch[0]);
     }
 
-    private XsLibrary xsLibrary = null;
+    private void testPoll() {
+        XsPollItem[] items = new XsPollItem[1];
+        items[0] = new XsPollItem(sock, null, xs.XS_POLLIN);
+        int n = xs.xs_poll(items, 1, 0);
+        System.out.printf("XS polled socket, got %d events\n",
+                          n);
+    }
+
+    private XsLibrary xs = null;
+    private Pointer ctx = null;
+    private Pointer sock = null;
 }
