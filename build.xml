@@ -17,6 +17,7 @@
 
   <property name="dir.lib.main" location="${dir.lib}/main"/>
   <property name="dir.lib.test" location="${dir.lib}/test"/>
+  <property name="dir.lib.perf" location="${dir.lib}/perf"/>
 
   <property name="dir.src.main" location="${dir.src}/main"/>
   <property name="dir.src.main.java" location="${dir.src.main}/java"/>
@@ -24,12 +25,17 @@
   <property name="dir.src.test" location="${dir.src}/test"/>
   <property name="dir.src.test.java" location="${dir.src.test}/java"/>
 
+  <property name="dir.src.perf" location="${dir.src}/perf"/>
+  <property name="dir.src.perf.java" location="${dir.src.perf}/java"/>
+
   <property name="dir.build.main" location="${dir.build}/main"/>
   <property name="dir.build.test" location="${dir.build}/test"/>
+  <property name="dir.build.perf" location="${dir.build}/perf"/>
   <property name="dir.build.jar" location="${dir.build}/jar"/>
 
   <property name="file.jar.main" value="${dir.build.jar}/${project}-${version}.jar"/>
   <property name="file.jar.test" value="${dir.build.jar}/${project}-${version}-test.jar"/>
+  <property name="file.jar.perf" value="${dir.build.jar}/${project}-${version}-perf.jar"/>
 
 
   <!-- CLASSPATHS -->
@@ -40,21 +46,29 @@
   <path id="cp.local-main">
     <fileset dir="${dir.lib.main}">
       <include name="**/*.jar"/>
-      <exclude name="**/*-test.jar"/>
     </fileset>
+    <path refid="cp.base"/>
   </path>
 
   <path id="cp.local-test">
     <fileset dir="${dir.lib.test}">
       <include name="**/*.jar"/>
-      <exclude name="**/*-test.jar"/>
     </fileset>
+    <path refid="cp.base"/>
+  </path>
+
+  <path id="cp.local-perf">
+    <fileset dir="${dir.lib.perf}">
+      <include name="**/*.jar"/>
+    </fileset>
+    <path refid="cp.base"/>
   </path>
 
   <path id="cp.lib-main">
     <fileset dir="${dir.build.jar}">
       <include name="**/*.jar"/>
       <exclude name="**/*-test.jar"/>
+      <exclude name="**/*-perf.jar"/>
     </fileset>
     <path refid="cp.local-main"/>
   </path>
@@ -64,6 +78,13 @@
       <include name="**/*-test.jar"/>
     </fileset>
     <path refid="cp.local-test"/>
+  </path>
+
+  <path id="cp.lib-perf">
+    <fileset dir="${dir.build.jar}">
+      <include name="**/*-perf.jar"/>
+    </fileset>
+    <path refid="cp.local-perf"/>
   </path>
 
 
@@ -77,6 +98,12 @@
     <path refid="cp.lib-main"/>
   </path>
 
+  <path id="cp.compile-perf">
+    <path refid="cp.local-main"/>
+    <path refid="cp.local-perf"/>
+    <path refid="cp.lib-main"/>
+  </path>
+
   <path id="cp.run-main">
     <path refid="cp.lib-main"/>
   </path>
@@ -86,13 +113,19 @@
     <path refid="cp.lib-test"/>
   </path>
 
+  <path id="cp.run-perf">
+    <path refid="cp.lib-main"/>
+    <path refid="cp.lib-perf"/>
+  </path>
+
 
   <!-- TARGETS -->
 
   <target name="create.dirs">
     <mkdir dir="${dir.build.main}"/>
-    <mkdir dir="${dir.build.jar}"/>
     <mkdir dir="${dir.build.test}"/>
+    <mkdir dir="${dir.build.perf}"/>
+    <mkdir dir="${dir.build.jar}"/>
   </target>
 
   <target name="compile.main" depends="create.dirs">
@@ -137,8 +170,24 @@
     </jar>
   </target>
 
-  <target name="compile" depends="compile.main,compile.test"/>
-  <target name="jar" depends="jar.main,jar.test"/>
+  <target name="compile.perf" depends="jar.main">
+    <javac includeantruntime="false"
+           destdir="${dir.build.perf}"
+           debug="true">
+      <src path="${dir.src.perf.java}"/>
+      <classpath refid="cp.compile-perf"/>
+      <compilerarg value="-Xlint"/>
+    </javac>
+  </target>
+
+  <target name="jar.perf" depends="compile.perf">
+    <jar destfile="${file.jar.perf}">
+      <fileset dir="${dir.build.perf}"/>
+    </jar>
+  </target>
+
+  <target name="compile" depends="compile.main,compile.test,compile.perf"/>
+  <target name="jar" depends="jar.main,jar.test,jar.perf"/>
 
   <target name="test" depends="jar">
     <junit failureproperty="junit.failure">
@@ -166,6 +215,13 @@
   <target name="run" depends="jar.main">
     <java fork="true" classname="${cn}">
       <classpath refid="cp.run-main"/>
+      <arg line="${args}"/>
+    </java>
+  </target>
+
+  <target name="perf" depends="jar.main,jar.perf">
+    <java fork="true" classname="${cn}">
+      <classpath refid="cp.run-perf"/>
       <arg line="${args}"/>
     </java>
   </target>
