@@ -1,21 +1,20 @@
 package io.crossroads;
 
 import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
-public class remote_lat {
+public class local_thr {
     public static void main(String [] args) {
         if (args.length != 3) {
             System.out.printf("argc was %d\n", args.length);
-            System.out.printf("usage: remote_lat <connect-to> <message-size> <roundtrip-count>\n");
+            System.out.printf("usage: local_thr <bind-to> <message-size> <message-count>\n");
             return;
         }
         
         XsLibrary xs = (XsLibrary) Native.loadLibrary("xs_d", XsLibrary.class);
 
-        String connect_to;
-        int roundtrip_count;
+        String bind_to;
+        int message_count;
         int message_size;
         Pointer ctx = null;
         Pointer s = null;
@@ -25,14 +24,14 @@ public class remote_lat {
 
         Pointer watch = null;
         long elapsed = 0;
-        double latency = 0.0;
+        long throughput = 0;
+        double megabits = 0.0;
 
-        connect_to = args[0];
+        bind_to = args[0];
         message_size = Integer.parseInt(args[1]);
-        roundtrip_count = Integer.parseInt(args[2]);
+        message_count = Integer.parseInt(args[2]);
         System.out.printf("args: %s | %d | %d\n",
-                          connect_to, message_size, roundtrip_count);
-        NativeLong nl = new NativeLong(message_size);
+                          bind_to, message_size, message_count);
 
         ctx = xs.xs_init();
         if (ctx == null) {
@@ -42,57 +41,63 @@ public class remote_lat {
         }
         System.out.printf("XS inited\n");
 
-        s = xs.xs_socket(ctx, xs.XS_REQ);
+        s = xs.xs_socket(ctx, xs.XS_PULL);
         if (s == null) {
             System.out.printf("error in xs_socket: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
         }
-        System.out.printf("XS REQ socket created\n");
+        System.out.printf("XS PULL socket created\n");
 
-        rc = xs.xs_connect(s, connect_to);
+        //  Add your socket options here.
+
+        rc = xs.xs_bind(s, bind_to);
         if (rc == -1) {
-            System.out.printf("error in xs_connect: %s\n",
+            System.out.printf("error in xs_bind: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
         }
-        System.out.printf("XS REQ socket connected to %s\n", connect_to);
+        System.out.printf("XS PULL socket bound to %s\n", bind_to);
 
-        rc = xs.xs_msg_init_size(msg, nl);
+        rc = xs.xs_msg_init(msg);
         if (rc != 0) {
-            System.out.printf("error in xs_msg_init_size: %s\n",
+            System.out.printf("error in xs_msg_init: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
         }
         System.out.printf("XS msg inited\n");
 
-        // memset (xs_msg_data (&msg), 0, message_size);
+
+        rc = xs.xs_recvmsg(s, msg, 0);
+        if (rc < 0) {
+            System.out.printf("error in xs_recvmsg: %s\n",
+                              xs.xs_strerror(xs.xs_errno()));
+            return;
+        }
+        if (xs.xs_msg_size(msg).longValue() != message_size) {
+            System.out.printf("message of incorrect size received\n");
+            return;
+        }
 
         watch = xs.xs_stopwatch_start();
 
-        System.out.printf("XS running %d iterations...\n", roundtrip_count);
-        for (i = 0; i != roundtrip_count; i++) {
-            rc = xs.xs_sendmsg(s, msg, 0);
-            if (rc < 0) {
-                System.out.printf("error in xs_sendmsg: %s\n",
-                                  xs.xs_strerror(xs.xs_errno()));
-                return;
-            }
-
-            rc = xs.xs_recvmsg (s, msg, 0);
+        System.out.printf("XS running %d iterations...\n", message_count - 1);
+        for (i = 0; i != message_count - 1; i++) {
+            rc = xs.xs_recvmsg(s, msg, 0);
             if (rc < 0) {
                 System.out.printf("error in xs_recvmsg: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
                 return;
             }
-            long ms = xs.xs_msg_size(msg).longValue();
-            if (ms != message_size) {
+            if (xs.xs_msg_size(msg).longValue() != message_size) {
                 System.out.printf("message of incorrect size received\n");
                 return;
             }
         }
 
         elapsed = xs.xs_stopwatch_stop(watch).longValue();
+        if (elapsed == 0)
+            elapsed = 1;
 
         rc = xs.xs_msg_close(msg);
         if (rc != 0) {
@@ -101,11 +106,13 @@ public class remote_lat {
             return;
         }
 
-        latency = (double) elapsed / (roundtrip_count * 2);
-        
+        throughput = (long) ((double) message_count / (double) elapsed * 1000000);
+        megabits = (double) (throughput * message_size * 8) / 1000000;
+
         System.out.printf("message size: %d [B]\n", message_size);
-        System.out.printf("roundtrip count: %d\n", roundtrip_count);
-        System.out.printf("average latency: %.3f [us]\n", latency);
+        System.out.printf("message count: %d\n", message_count);
+        System.out.printf("mean throughput: %d [msg/s]\n", (int) throughput);
+        System.out.printf("mean throughput: %.3f [Mb/s]\n", megabits);
 
         rc = xs.xs_close(s);
         if (rc != 0) {
