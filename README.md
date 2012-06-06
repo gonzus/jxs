@@ -10,15 +10,6 @@ What is this?
 This is a `JNA`-based Java binding for `libxs`, the Crossroads IO library.
 
 
-Status
-------
-
-The XS library is almost 100% supported now.  Still missing are:
-
-* Support for `xs_poll()` (coming soon).
-* Support for plugins (don't know yet if this will be added).
-
-
 How to Use
 ----------
 
@@ -42,3 +33,19 @@ command prompts and run the following (one command in each prompt):
 
 `ant -Dcn=io.crossroads.local_lat -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
 `ant -Dcn=io.crossroads.remote_lat -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
+
+Similarly, for the throughput test:
+
+`ant -Dcn=io.crossroads.local_thr -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
+`ant -Dcn=io.crossroads.remote_thr -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
+
+
+Status
+------
+
+The XS library is almost 100% supported now.  This includes support
+for `xs_poll()`, although this has not been thoroughly tested.
+
+Still missing are:
+
+* Support for plugins (don't know yet if this will ever be added).
