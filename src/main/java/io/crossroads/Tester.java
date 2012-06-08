@@ -20,7 +20,7 @@ public class Tester {
         System.out.println("Starting Tester");
         xs = (XsLibrary) Native.loadLibrary("xs_d", XsLibrary.class);
         ctx = xs.xs_init();
-        sock = xs.xs_socket(ctx, xs.XS_REQ);
+        sock = xs.xs_socket(ctx, XsLibrary.XS_REQ);
     }
 
     public void dispose() {
@@ -50,7 +50,7 @@ public class Tester {
 
     private void testPoll() {
         XsPollItem[] items = new XsPollItem[1];
-        items[0] = new XsPollItem(sock, null, xs.XS_POLLIN);
+        items[0] = new XsPollItem(sock, null, XsLibrary.XS_POLLIN);
         int n = xs.xs_poll(items, 1, 0);
         System.out.printf("XS polled socket, got %d events\n",
                           n);
