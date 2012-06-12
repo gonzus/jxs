@@ -1,75 +1,63 @@
-package io.crossroads.jna;
+package io.crossroads.jni;
 
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
 
-public class local_lat {
+public class remote_thr {
     public static void main(String [] args) {
         if (args.length != 3) {
             System.out.printf("argc was %d\n", args.length);
-            System.out.printf("usage: local_lat <bind-to> <message-size> <roundtrip-count>\n");
+            System.out.printf("usage: remote_thr <connect-to> <message-size> <message-count>\n");
             return;
         }
         
-        XsLibrary xs = (XsLibrary) Native.loadLibrary("xs_d", XsLibrary.class);
+        XsLibrary xs = new XsLibrary();
 
-        String bind_to;
-        int roundtrip_count;
+        String connect_to;
+        int message_count;
         int message_size;
-        Pointer ctx = null;
-        Pointer s = null;
+        long ctx = 0;
+        long s = 0;
         int rc;
         int i;
 
-        bind_to = args[0];
+        connect_to = args[0];
         message_size = Integer.parseInt(args[1]);
-        roundtrip_count = Integer.parseInt(args[2]);
+        message_count = Integer.parseInt(args[2]);
         System.out.printf("args: %s | %d | %d\n",
-                          bind_to, message_size, roundtrip_count);
+                          connect_to, message_size, message_count);
 
         ctx = xs.xs_init();
-        if (ctx == null) {
+        if (ctx == 0) {
             System.out.printf("error in xs_init: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
         }
         System.out.printf("XS inited\n");
 
-        s = xs.xs_socket(ctx, XsLibrary.XS_REP);
-        if (s == null) {
+        s = xs.xs_socket(ctx, XsLibrary.XS_PUSH);
+        if (s == 0) {
             System.out.printf("error in xs_socket: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
         }
-        System.out.printf("XS REP socket created\n");
+        System.out.printf("XS PUSH socket created\n");
 
-        rc = xs.xs_bind(s, bind_to);
+        //  Add your socket options here.
+
+        rc = xs.xs_connect(s, connect_to);
         if (rc == -1) {
-            System.out.printf("error in xs_bind: %s\n",
+            System.out.printf("error in xs_connect: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
         }
-        System.out.printf("XS REP socket bound to %s\n", bind_to);
+        System.out.printf("XS PUSH socket connected to %s\n", connect_to);
 
         int size = 128;
-        ByteBuffer bb = ByteBuffer.allocate(size);
-        byte[] bba = bb.array();
+        ByteBuffer bb = ByteBuffer.allocateDirect(size);
 
-        System.out.printf("XS running %d iterations...\n", roundtrip_count);
-        for (i = 0; i != roundtrip_count; i++) {
-            rc = xs.xs_recv(s, bba, size, 0);
-            if (rc < 0) {
-                System.out.printf("error in xs_recv: %s\n",
-                                  xs.xs_strerror(xs.xs_errno()));
-                return;
-            }
-            if (rc != message_size) {
-                System.out.printf("message of incorrect size received\n");
-                return;
-            }
-
-            rc = xs.xs_send(s, bba, message_size, 0);
+        System.out.printf("XS running %d iterations...\n", message_count);
+        for (i = 0; i != message_count; i++) {
+            rc = xs.xs_send(s, bb, 0, message_size, 0);
             if (rc < 0) {
                 System.out.printf("error in xs_send: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));

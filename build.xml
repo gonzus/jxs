@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="jxs" default="first" basedir=".">
+<project name="jxs"
+         default="first"
+         basedir="."
+         xmlns:cpptasks="antlib:net.sf.antcontrib.cpptasks"
+         >
 
 
   <!-- PROPERTIES -->
@@ -21,6 +25,14 @@
 
   <property name="dir.src.main" location="${dir.src}/main"/>
   <property name="dir.src.main.java" location="${dir.src.main}/java"/>
+  <property name="dir.src.main.c" location="${dir.src.main}/c"/>
+  <property name="dir.src.main.c.jni" location="${dir.src.main}/c/jni"/>
+
+  <property name="class.jni" value="io.crossroads.jni.XsLibrary"/>
+  <property name="dir.xs" location="../libxs"/>
+  <property name="dir.xs.inc" location="${dir.xs}/include"/>
+  <property name="dir.xs.lib" location="${dir.xs}/lib/Win32"/>
+  <property name="dir.xs.libname" value="libxs_d"/>
 
   <property name="dir.src.test" location="${dir.src}/test"/>
   <property name="dir.src.test.java" location="${dir.src.test}/java"/>
@@ -28,14 +40,21 @@
   <property name="dir.src.perf" location="${dir.src}/perf"/>
   <property name="dir.src.perf.java" location="${dir.src.perf}/java"/>
 
-  <property name="dir.build.main" location="${dir.build}/main"/>
-  <property name="dir.build.test" location="${dir.build}/test"/>
-  <property name="dir.build.perf" location="${dir.build}/perf"/>
-  <property name="dir.build.jar" location="${dir.build}/jar"/>
+  <property name="dir.jbuild" location="${dir.build}/java"/>
+  <property name="dir.jbuild.main" location="${dir.jbuild}/main"/>
+  <property name="dir.jbuild.test" location="${dir.jbuild}/test"/>
+  <property name="dir.jbuild.perf" location="${dir.jbuild}/perf"/>
+  <property name="dir.jbuild.jar" location="${dir.jbuild}/jar"/>
 
-  <property name="file.jar.main" value="${dir.build.jar}/${project}-${version}.jar"/>
-  <property name="file.jar.test" value="${dir.build.jar}/${project}-${version}-test.jar"/>
-  <property name="file.jar.perf" value="${dir.build.jar}/${project}-${version}-perf.jar"/>
+  <property name="dir.cbuild" location="${dir.build}/c"/>
+  <property name="dir.cbuild.main" location="${dir.cbuild}/main"/>
+  <property name="dir.cbuild.main.jni" location="${dir.cbuild}/main/jni"/>
+  <property name="dir.cbuild.dll" location="${dir.cbuild}/dll"/>
+
+  <property name="file.jar.main" value="${dir.jbuild.jar}/${project}-${version}.jar"/>
+  <property name="file.jar.test" value="${dir.jbuild.jar}/${project}-${version}-test.jar"/>
+  <property name="file.jar.perf" value="${dir.jbuild.jar}/${project}-${version}-perf.jar"/>
+  <property name="file.dll.main" value="${dir.cbuild.dll}/${project}"/>
 
 
   <!-- CLASSPATHS -->
@@ -65,7 +84,7 @@
   </path>
 
   <path id="cp.lib-main">
-    <fileset dir="${dir.build.jar}">
+    <fileset dir="${dir.jbuild.jar}">
       <include name="**/*.jar"/>
       <exclude name="**/*-test.jar"/>
       <exclude name="**/*-perf.jar"/>
@@ -74,14 +93,14 @@
   </path>
 
   <path id="cp.lib-test">
-    <fileset dir="${dir.build.jar}">
+    <fileset dir="${dir.jbuild.jar}">
       <include name="**/*-test.jar"/>
     </fileset>
     <path refid="cp.local-test"/>
   </path>
 
   <path id="cp.lib-perf">
-    <fileset dir="${dir.build.jar}">
+    <fileset dir="${dir.jbuild.jar}">
       <include name="**/*-perf.jar"/>
     </fileset>
     <path refid="cp.local-perf"/>
@@ -122,27 +141,47 @@
   <!-- TARGETS -->
 
   <target name="create.dirs">
-    <mkdir dir="${dir.build.main}"/>
-    <mkdir dir="${dir.build.test}"/>
-    <mkdir dir="${dir.build.perf}"/>
-    <mkdir dir="${dir.build.jar}"/>
+    <mkdir dir="${dir.jbuild}"/>
+    <mkdir dir="${dir.jbuild.main}"/>
+    <mkdir dir="${dir.jbuild.test}"/>
+    <mkdir dir="${dir.jbuild.perf}"/>
+    <mkdir dir="${dir.jbuild.jar}"/>
+    <mkdir dir="${dir.cbuild}"/>
+    <mkdir dir="${dir.cbuild.main}"/>
+    <mkdir dir="${dir.cbuild.main.jni}"/>
+    <mkdir dir="${dir.cbuild.dll}"/>
   </target>
 
   <target name="compile.main" depends="create.dirs">
     <javac includeantruntime="false"
-           destdir="${dir.build.main}"
+           destdir="${dir.jbuild.main}"
            debug="true">
       <src path="${dir.src.main.java}"/>
-      <src path="${dir.build.main}"/>
+      <src path="${dir.jbuild.main}"/>
       <classpath refid="cp.compile-main"/>
       <compilerarg value="-Xlint"/>
     </javac>
+  </target>
 
-    <copy todir="${dir.build.main}">
-      <fileset dir="${dir.src.main.java}">
-        <include name="**/*.hbm.xml"/>
-      </fileset>
-    </copy>
+  <target name="jni.genh" depends="jar.main">
+    <javah destdir="${dir.cbuild.main.jni}"
+           verbose="no">
+      <class name="${class.jni}"/>
+      <classpath refid="cp.lib-main"/>
+    </javah>
+  </target>
+
+  <target name="jni.geno" depends="jni.genh">
+    <cpptasks:cc warnings="none"
+                 subsystem="console"
+                 name="msvc"
+                 objdir="${dir.cbuild.main.jni}"
+                 outtype="shared"
+                 outfile="${file.dll.main}">
+      <includepath path="${dir.cbuild.main.jni};${dir.xs.inc}"/>
+      <fileset dir="${dir.src.main.c.jni}" includes="*.c"/>
+      <libset dir="${dir.xs.lib}" libs="${dir.xs.libname}"/>
+    </cpptasks:cc>
   </target>
 
   <target name="jar.main" depends="compile.main">
@@ -150,13 +189,13 @@
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
       </manifest>
-      <fileset dir="${dir.build.main}"/>
+      <fileset dir="${dir.jbuild.main}"/>
     </jar>
   </target>
 
   <target name="compile.test" depends="jar.main">
     <javac includeantruntime="false"
-           destdir="${dir.build.test}"
+           destdir="${dir.jbuild.test}"
            debug="true">
       <src path="${dir.src.test.java}"/>
       <classpath refid="cp.compile-test"/>
@@ -166,13 +205,13 @@
 
   <target name="jar.test" depends="compile.test">
     <jar destfile="${file.jar.test}">
-      <fileset dir="${dir.build.test}"/>
+      <fileset dir="${dir.jbuild.test}"/>
     </jar>
   </target>
 
   <target name="compile.perf" depends="jar.main">
     <javac includeantruntime="false"
-           destdir="${dir.build.perf}"
+           destdir="${dir.jbuild.perf}"
            debug="true">
       <src path="${dir.src.perf.java}"/>
       <classpath refid="cp.compile-perf"/>
@@ -182,12 +221,12 @@
 
   <target name="jar.perf" depends="compile.perf">
     <jar destfile="${file.jar.perf}">
-      <fileset dir="${dir.build.perf}"/>
+      <fileset dir="${dir.jbuild.perf}"/>
     </jar>
   </target>
 
-  <target name="compile" depends="compile.main,compile.test,compile.perf"/>
-  <target name="jar" depends="jar.main,jar.test,jar.perf"/>
+  <target name="compile" depends="jni.geno,compile.main,compile.test,compile.perf"/>
+  <target name="jar" depends="jni.geno,jar.main,jar.test,jar.perf"/>
 
   <target name="test" depends="jar">
     <junit failureproperty="junit.failure">
@@ -195,7 +234,7 @@
 
       <batchtest fork="yes">
 	<formatter type="brief" usefile="false"/>
-	<fileset dir="${dir.build.test}">
+	<fileset dir="${dir.jbuild.test}">
 	  <include name="**/*Test*.class"/>
 	</fileset>
       </batchtest>
@@ -212,15 +251,17 @@
     </delete>
   </target>
 
-  <target name="run" depends="jar.main">
+  <target name="run" depends="jni.geno,jar.main">
     <java fork="true" classname="${cn}">
+      <sysproperty key="java.library.path" value="${dir.cbuild.dll}"/>
       <classpath refid="cp.run-main"/>
       <arg line="${args}"/>
     </java>
   </target>
 
-  <target name="perf" depends="jar.main,jar.perf">
+  <target name="perf" depends="jni.geno,jar.main,jar.perf">
     <java fork="true" classname="${cn}">
+      <sysproperty key="java.library.path" value="${dir.cbuild.dll}"/>
       <classpath refid="cp.run-perf"/>
       <arg line="${args}"/>
     </java>

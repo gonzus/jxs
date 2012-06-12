@@ -1,7 +1,5 @@
-package io.crossroads.jna;
+package io.crossroads.jni;
 
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
 
 public class local_lat {
@@ -12,13 +10,13 @@ public class local_lat {
             return;
         }
         
-        XsLibrary xs = (XsLibrary) Native.loadLibrary("xs_d", XsLibrary.class);
+        XsLibrary xs = new XsLibrary();
 
         String bind_to;
         int roundtrip_count;
         int message_size;
-        Pointer ctx = null;
-        Pointer s = null;
+        long ctx = 0;
+        long s = 0;
         int rc;
         int i;
 
@@ -29,7 +27,7 @@ public class local_lat {
                           bind_to, message_size, roundtrip_count);
 
         ctx = xs.xs_init();
-        if (ctx == null) {
+        if (ctx == 0) {
             System.out.printf("error in xs_init: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
@@ -37,7 +35,7 @@ public class local_lat {
         System.out.printf("XS inited\n");
 
         s = xs.xs_socket(ctx, XsLibrary.XS_REP);
-        if (s == null) {
+        if (s == 0) {
             System.out.printf("error in xs_socket: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
@@ -53,12 +51,11 @@ public class local_lat {
         System.out.printf("XS REP socket bound to %s\n", bind_to);
 
         int size = 128;
-        ByteBuffer bb = ByteBuffer.allocate(size);
-        byte[] bba = bb.array();
+        ByteBuffer bb = ByteBuffer.allocateDirect(size);
 
         System.out.printf("XS running %d iterations...\n", roundtrip_count);
         for (i = 0; i != roundtrip_count; i++) {
-            rc = xs.xs_recv(s, bba, size, 0);
+            rc = xs.xs_recv(s, bb, 0, size, 0);
             if (rc < 0) {
                 System.out.printf("error in xs_recv: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
@@ -69,7 +66,7 @@ public class local_lat {
                 return;
             }
 
-            rc = xs.xs_send(s, bba, message_size, 0);
+            rc = xs.xs_send(s, bb, 0, message_size, 0);
             if (rc < 0) {
                 System.out.printf("error in xs_send: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));

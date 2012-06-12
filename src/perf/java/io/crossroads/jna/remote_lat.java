@@ -1,8 +1,8 @@
 package io.crossroads.jna;
 
 import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import java.nio.ByteBuffer;
 
 public class remote_lat {
     public static void main(String [] args) {
@@ -21,7 +21,6 @@ public class remote_lat {
         Pointer s = null;
         int rc;
         int i;
-        XsMsg msg = new XsMsg();
 
         Pointer watch = null;
         long elapsed = 0;
@@ -32,7 +31,6 @@ public class remote_lat {
         roundtrip_count = Integer.parseInt(args[2]);
         System.out.printf("args: %s | %d | %d\n",
                           connect_to, message_size, roundtrip_count);
-        NativeLong nl = new NativeLong(message_size);
 
         ctx = xs.xs_init();
         if (ctx == null) {
@@ -58,48 +56,38 @@ public class remote_lat {
         }
         System.out.printf("XS REQ socket connected to %s\n", connect_to);
 
-        rc = xs.xs_msg_init_size(msg, nl);
-        if (rc != 0) {
-            System.out.printf("error in xs_msg_init_size: %s\n",
-                              xs.xs_strerror(xs.xs_errno()));
-            return;
-        }
-        System.out.printf("XS msg inited\n");
-
-        // memset (xs_msg_data (&msg), 0, message_size);
+        int size = 128;
+        ByteBuffer bb = ByteBuffer.allocate(size);
+        byte[] bba = bb.array();
 
         watch = xs.xs_stopwatch_start();
 
         System.out.printf("XS running %d iterations...\n", roundtrip_count);
         for (i = 0; i != roundtrip_count; i++) {
-            rc = xs.xs_sendmsg(s, msg, 0);
+            rc = xs.xs_send(s, bba, message_size, 0);
             if (rc < 0) {
-                System.out.printf("error in xs_sendmsg: %s\n",
+                System.out.printf("error in xs_send: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
+                return;
+            }
+            if (rc != message_size) {
+                System.out.printf("message of incorrect size sent\n");
                 return;
             }
 
-            rc = xs.xs_recvmsg (s, msg, 0);
+            rc = xs.xs_recv(s, bba, size, 0);
             if (rc < 0) {
-                System.out.printf("error in xs_recvmsg: %s\n",
+                System.out.printf("error in xs_recv: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
                 return;
             }
-            long ms = xs.xs_msg_size(msg).longValue();
-            if (ms != message_size) {
+            if (rc != message_size) {
                 System.out.printf("message of incorrect size received\n");
                 return;
             }
         }
 
         elapsed = xs.xs_stopwatch_stop(watch).longValue();
-
-        rc = xs.xs_msg_close(msg);
-        if (rc != 0) {
-            System.out.printf("error in xs_msg_close: %s\n",
-                              xs.xs_strerror(xs.xs_errno()));
-            return;
-        }
 
         latency = (double) elapsed / (roundtrip_count * 2);
         

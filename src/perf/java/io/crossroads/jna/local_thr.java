@@ -2,6 +2,7 @@ package io.crossroads.jna;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import java.nio.ByteBuffer;
 
 public class local_thr {
     public static void main(String [] args) {
@@ -20,7 +21,6 @@ public class local_thr {
         Pointer s = null;
         int rc;
         int i;
-        XsMsg msg = new XsMsg();
 
         Pointer watch = null;
         long elapsed = 0;
@@ -59,22 +59,17 @@ public class local_thr {
         }
         System.out.printf("XS PULL socket bound to %s\n", bind_to);
 
-        rc = xs.xs_msg_init(msg);
-        if (rc != 0) {
-            System.out.printf("error in xs_msg_init: %s\n",
-                              xs.xs_strerror(xs.xs_errno()));
-            return;
-        }
-        System.out.printf("XS msg inited\n");
+        int size = 128;
+        ByteBuffer bb = ByteBuffer.allocate(size);
+        byte[] bba = bb.array();
 
-
-        rc = xs.xs_recvmsg(s, msg, 0);
+        rc = xs.xs_recv(s, bba, size, 0);
         if (rc < 0) {
-            System.out.printf("error in xs_recvmsg: %s\n",
+            System.out.printf("error in xs_recv: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
         }
-        if (xs.xs_msg_size(msg).longValue() != message_size) {
+        if (rc != message_size) {
             System.out.printf("message of incorrect size received\n");
             return;
         }
@@ -83,13 +78,13 @@ public class local_thr {
 
         System.out.printf("XS running %d iterations...\n", message_count - 1);
         for (i = 0; i != message_count - 1; i++) {
-            rc = xs.xs_recvmsg(s, msg, 0);
+            rc = xs.xs_recv(s, bba, size, 0);
             if (rc < 0) {
-                System.out.printf("error in xs_recvmsg: %s\n",
+                System.out.printf("error in xs_recv: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
                 return;
             }
-            if (xs.xs_msg_size(msg).longValue() != message_size) {
+            if (rc != message_size) {
                 System.out.printf("message of incorrect size received\n");
                 return;
             }
@@ -98,13 +93,6 @@ public class local_thr {
         elapsed = xs.xs_stopwatch_stop(watch).longValue();
         if (elapsed == 0)
             elapsed = 1;
-
-        rc = xs.xs_msg_close(msg);
-        if (rc != 0) {
-            System.out.printf("error in xs_msg_close: %s\n",
-                              xs.xs_strerror(xs.xs_errno()));
-            return;
-        }
 
         throughput = (long) ((double) message_count / (double) elapsed * 1000000);
         megabits = (double) (throughput * message_size * 8) / 1000000;

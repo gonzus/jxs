@@ -17,7 +17,7 @@ public class Tester {
     }
     
     public void allocate() {
-        System.out.println("Starting Tester");
+        System.out.printf("Starting Tester\n");
         xs = (XsLibrary) Native.loadLibrary("xs_d", XsLibrary.class);
         ctx = xs.xs_init();
         sock = xs.xs_socket(ctx, XsLibrary.XS_REQ);
@@ -27,12 +27,12 @@ public class Tester {
         xs.xs_close(sock);
         xs.xs_term(ctx);
         xs = null;
-        System.out.println("Finished Tester");
+        System.out.printf("Finished Tester\n");
     }
 
     private boolean testLibrary() {
         if (xs == null) {
-            System.out.println("xsLibrary is null");
+            System.out.printf("xsLibrary is null\n");
             return false;
         }
         

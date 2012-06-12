@@ -3,6 +3,7 @@ package io.crossroads.jna;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import java.nio.ByteBuffer;
 
 public class remote_thr {
     public static void main(String [] args) {
@@ -21,7 +22,6 @@ public class remote_thr {
         Pointer s = null;
         int rc;
         int i;
-        XsMsg msg = new XsMsg();
 
         connect_to = args[0];
         message_size = Integer.parseInt(args[1]);
@@ -56,26 +56,20 @@ public class remote_thr {
         }
         System.out.printf("XS PUSH socket connected to %s\n", connect_to);
 
+        int size = 128;
+        ByteBuffer bb = ByteBuffer.allocate(size);
+        byte[] bba = bb.array();
+
         System.out.printf("XS running %d iterations...\n", message_count);
         for (i = 0; i != message_count; i++) {
-            rc = xs.xs_msg_init_size(msg, nl);
-            if (rc != 0) {
-                System.out.printf("error in xs_msg_init_size: %s\n",
-                                  xs.xs_strerror(xs.xs_errno()));
-                return;
-            }
-            // memset (xs_msg_data (&msg), 0, message_size);
-
-            rc = xs.xs_sendmsg(s, msg, 0);
+            rc = xs.xs_send(s, bba, message_size, 0);
             if (rc < 0) {
-                System.out.printf("error in xs_sendmsg: %s\n",
+                System.out.printf("error in xs_send: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
                 return;
             }
-            rc = xs.xs_msg_close(msg);
-            if (rc != 0) {
-                System.out.printf("error in xs_msg_close: %s\n",
-                                  xs.xs_strerror(xs.xs_errno()));
+            if (rc != message_size) {
+                System.out.printf("message of incorrect size sent\n");
                 return;
             }
         }

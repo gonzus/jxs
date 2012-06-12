@@ -146,13 +146,13 @@ public interface XsLibrary extends Library {
                     int how);
     
     int xs_send(Pointer socket,
-                Pointer buf,
-                NativeLong len,
+                byte[] buf,
+                int len,
                 int flags);
 
     int xs_recv(Pointer socket,
-                Pointer buf,
-                NativeLong len,
+                byte[] buf,
+                int len,
                 int flags);
 
     int xs_sendmsg(Pointer socket,

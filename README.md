@@ -49,3 +49,11 @@ for `xs_poll()`, although this has not been thoroughly tested.
 Still missing are:
 
 * Support for plugins (don't know yet if this will ever be added).
+
+
+License
+-------
+
+This project is released under the LGPL license, as is the native
+libxs library.  See LICENSE for more details as well as the Crossroads
+I/O Licensing page.
