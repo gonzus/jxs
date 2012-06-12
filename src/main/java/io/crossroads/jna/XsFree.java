@@ -1,4 +1,4 @@
-package io.crossroads;
+package io.crossroads.jna;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;

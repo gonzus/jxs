@@ -1,4 +1,4 @@
-package io.crossroads;
+package io.crossroads.jna;
 
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
@@ -176,5 +176,5 @@ public interface XsLibrary extends Library {
     NativeLong xs_stopwatch_stop(Pointer watch);
 
     // TODO:
-    // 1. plugins
+    // plugins (does it make sense?)
 }
