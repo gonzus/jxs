@@ -7,37 +7,54 @@ Java binding for `libxs` -- Crossroads IO
 What is this?
 -------------
 
-This is a `JNA`-based Java binding for `libxs`, the Crossroads IO library.
+This package contains two Java bindings for `libxs`, the Crossroads IO library:
 
+1. A deprecated binding based on `JNA`.  This was the first
+   implementation in this package, but its performance was
+   unacceptable.
+
+2. A supported binding based on `JNI`.  The performance for this
+   binding is similar (but lower) to the performance for the native
+   `libxs`.
 
 How to Use
 ----------
 
-You will need the `JDK` (I use 1.6.0_30 on Windows 7) and `Ant` (I use
-1.8.4); there is no need for any other tools.  I have also included
-the `JNA` libraries in the `lib` directory (version 3.4.0), so you
-won't have to get them yourself; if you want to do it, go to
-https://github.com/twall/jna.
+You will need the following:
 
-Once downloaded, you can do any of these:
+1. A copy of the `JDK`.  The binding has been tested on `v1.6.0_30`
+   running on a Windows 7 machine.
+
+2. A copy of `ant`.  I use `v1.8.4`.
+
+3. When using JNI (the supported option), a C compiler.  I use MSVC
+   2010.
+
+4. When using JNI (the supported option), a copy of `cpptasks`, an
+   `ant` helper that automates compilation of C code.  I use `v1.0b5`.
+
+Once your environment is set up and you have downloaded `jxs`, you can
+do any of these:
 
 * `ant jar` -- create all `JAR`s.
 * `ant test` -- run all unit tests (none for now).
-* `ant run` -- run a specific class in one of the `JAR`s (not very
-  useful).
-* `ant perf` -- run a performance test (for now, only latency test is
-  supported).
+* `ant run` -- run a specific class in one of the `JAR`s.
+* `ant perf` -- run performance tests.
 
-In particular, to run the latency test you would have to create two
-command prompts and run the following (one command in each prompt):
+To run a basic tester class:
 
-`ant -Dcn=io.crossroads.local_lat -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
-`ant -Dcn=io.crossroads.remote_lat -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
+`ant -Dcn=io.crossroads.jni.Tester run`
+
+To run the latency test you would have to create two command prompts
+and run the following (one command in each prompt):
+
+`ant -Dcn=io.crossroads.jni.local_lat -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
+`ant -Dcn=io.crossroads.jni.remote_lat -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
 
 Similarly, for the throughput test:
 
-`ant -Dcn=io.crossroads.local_thr -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
-`ant -Dcn=io.crossroads.remote_thr -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
+`ant -Dcn=io.crossroads.jni.local_thr -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
+`ant -Dcn=io.crossroads.jni.remote_thr -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
 
 
 Status
@@ -48,6 +65,9 @@ for `xs_poll()`, although this has not been thoroughly tested.
 
 Still missing are:
 
+* Support for setting context options.
+* Support for setting / getting socket options.
+* Support for I/O multiplexing.
 * Support for plugins (don't know yet if this will ever be added).
 
 

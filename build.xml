@@ -28,7 +28,9 @@
   <property name="dir.src.main.c" location="${dir.src.main}/c"/>
   <property name="dir.src.main.c.jni" location="${dir.src.main}/c/jni"/>
 
-  <property name="class.jni" value="io.crossroads.jni.XsLibrary"/>
+  <property name="class.jni1" value="io.crossroads.jni.XsLibrary"/>
+  <property name="class.jni2" value="io.crossroads.jni.XsConstants"/>
+  <property name="class.jni3" value="io.crossroads.jni.XsErrors"/>
   <property name="dir.xs" location="../libxs"/>
   <property name="dir.xs.inc" location="${dir.xs}/include"/>
   <property name="dir.xs.lib" location="${dir.xs}/lib/Win32"/>
@@ -166,7 +168,9 @@
   <target name="jni.genh" depends="jar.main">
     <javah destdir="${dir.cbuild.main.jni}"
            verbose="no">
-      <class name="${class.jni}"/>
+      <class name="${class.jni1}"/>
+      <class name="${class.jni2}"/>
+      <class name="${class.jni3}"/>
       <classpath refid="cp.lib-main"/>
     </javah>
   </target>

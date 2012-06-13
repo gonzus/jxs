@@ -4,8 +4,17 @@ import java.nio.ByteBuffer;
 
 public class XsLibrary {
     static {
-        System.loadLibrary ("jxs");
+        ensureNativeCode();
     }
+
+    public XsLibrary()
+    {
+        xc = new XsConstants();
+        xe = new XsErrors();
+    }
+    
+    public XsConstants xc;
+    public XsErrors xe;
     
     public native int xs_version(Integer major,
                                  Integer minor,
@@ -16,29 +25,28 @@ public class XsLibrary {
 
     public native long xs_init();
     public native int xs_term(long context);
-
-    static final int XS_PAIR = 0;
-    static final int XS_PUB = 1;
-    static final int XS_SUB = 2;
-    static final int XS_REQ = 3;
-    static final int XS_REP = 4;
-    static final int XS_XREQ = 5;
-    static final int XS_XREP = 6;
-    static final int XS_PULL = 7;
-    static final int XS_PUSH = 8;
-    static final int XS_XPUB = 9;
-    static final int XS_XSUB = 10;
-    static final int XS_SURVEYOR = 11;
-    static final int XS_RESPONDENT = 12;
-    static final int XS_XSURVEYOR = 13;
-    static final int XS_XRESPONDENT = 14;
+    /*
+     * TODO:
+    public native int xs_setctxopt(long context,
+                                   int option,
+                                   const void* optval,
+                                   int optvallen);
+    */
     
-    static final int XS_ROUTER = XS_XREP;
-    static final int XS_DEALER = XS_XREQ;
-
     public native long xs_socket(long context,
                                  int type);
     public native int xs_close(long socket);
+    /*
+     * TODO:
+    public native int xs_setsockopt(long context,
+                                    int option,
+                                    const void* optval,
+                                    int optvallen);
+    public native int xs_getsockopt(long context,
+                                    int option,
+                                    void* optval,
+                                    int optvallen);
+    */
     public native int xs_bind(long socket,
                               String address);
     public native int xs_connect (long socket,
@@ -55,7 +63,19 @@ public class XsLibrary {
                               int offset,
                               int length,
                               int flags);
+    /*
+     * TODO:
+    public native int xs_poll(xs_pollitem_t *items,
+                              int nitems,
+                              int timeout);
+    */
 
     public native long xs_stopwatch_start();
     public native long xs_stopwatch_stop(long watch);
+
+
+    private static void ensureNativeCode()
+    {
+        System.loadLibrary ("jxs");
+    }
 }

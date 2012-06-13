@@ -3,7 +3,7 @@
 #include "io_crossroads_jni_XsLibrary.h"
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1version(JNIEnv* env,
-                                                                    jobject cls,
+                                                                    jobject obj,
                                                                     jobject major,
                                                                     jobject minor,
                                                                     jobject patch)
@@ -33,13 +33,13 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1version(JNIEnv* env,
 }
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1errno(JNIEnv* env,
-                                                                  jobject cls)
+                                                                  jobject obj)
 {
     return xs_errno();
 }
 
 JNIEXPORT jstring JNICALL Java_io_crossroads_jni_XsLibrary_xs_1strerror(JNIEnv* env,
-                                                                        jobject cls,
+                                                                        jobject obj,
                                                                         jint errnum)
 {
     const char* err = xs_strerror(errnum);
@@ -48,7 +48,7 @@ JNIEXPORT jstring JNICALL Java_io_crossroads_jni_XsLibrary_xs_1strerror(JNIEnv* 
 }
 
 JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1init(JNIEnv* env,
-                                                                  jobject cls)
+                                                                  jobject obj)
 {
     void* cont = xs_init();
 #if 0
@@ -58,7 +58,7 @@ JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1init(JNIEnv* env,
 }
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1term(JNIEnv* env,
-                                                                 jobject cls,
+                                                                 jobject obj,
                                                                  jlong context)
 
 {
@@ -71,7 +71,7 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1term(JNIEnv* env,
 }
 
 JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1socket(JNIEnv* env,
-                                                                    jobject cls,
+                                                                    jobject obj,
                                                                     jlong context,
                                                                     jint type)
 {
@@ -84,7 +84,7 @@ JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1socket(JNIEnv* env,
 }
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1close(JNIEnv* env,
-                                                                  jobject cls,
+                                                                  jobject obj,
                                                                   jlong socket)
 {
     void* sock = (void*) socket;
@@ -96,7 +96,7 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1close(JNIEnv* env,
 }
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1bind(JNIEnv* env,
-                                                                 jobject cls,
+                                                                 jobject obj,
                                                                  jlong socket,
                                                                  jstring address)
 {
@@ -110,7 +110,7 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1bind(JNIEnv* env,
 }
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1connect(JNIEnv* env,
-                                                                    jobject cls,
+                                                                    jobject obj,
                                                                     jlong socket,
                                                                     jstring address)
 {
@@ -124,7 +124,7 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1connect(JNIEnv* env,
 }
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1shutdown(JNIEnv* env,
-                                                                     jobject cls,
+                                                                     jobject obj,
                                                                      jlong socket,
                                                                      jint how)
 {
@@ -137,7 +137,7 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1shutdown(JNIEnv* env
 }
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1send(JNIEnv* env,
-                                                                 jobject cls,
+                                                                 jobject obj,
                                                                  jlong socket,
                                                                  jobject buffer,
                                                                  jint offset,
@@ -161,7 +161,7 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1send(JNIEnv* env,
 }
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1recv(JNIEnv* env,
-                                                                 jobject cls,
+                                                                 jobject obj,
                                                                  jlong socket,
                                                                  jobject buffer,
                                                                  jint offset,
@@ -185,7 +185,7 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1recv(JNIEnv* env,
 }
 
 JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1stopwatch_1start(JNIEnv* env,
-                                                                              jobject cls)
+                                                                              jobject obj)
 {
     void* w = xs_stopwatch_start();
 #if 0
@@ -196,7 +196,7 @@ JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1stopwatch_1start(JN
 }
 
 JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1stopwatch_1stop(JNIEnv* env,
-                                                                             jobject cls,
+                                                                             jobject obj,
                                                                              jlong watch)
 {
     void* w = (void*) watch;
