@@ -60,14 +60,15 @@ Similarly, for the throughput test:
 Status
 ------
 
-The XS library is almost 100% supported now.  This includes support
-for `xs_poll()`, although this has not been thoroughly tested.
+The XS library is about 80% supported now.  Still missing are:
 
-Still missing are:
+* Support for setting context options (`xs_setctxopt()`).
 
-* Support for setting context options.
-* Support for setting / getting socket options.
-* Support for I/O multiplexing.
+* Support for setting / getting socket options (`xs_setsockopt()`,
+  `xs_getsockopt()`).
+
+* Support for I/O multiplexing (`xs_poll()`).
+
 * Support for plugins (don't know yet if this will ever be added).
 
 
