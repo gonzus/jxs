@@ -86,6 +86,7 @@ public class Tester {
         long s2 = xs.xs_socket(context, XsConstants.XS_SUB);
         long s3 = xs.xs_socket(context, XsConstants.XS_PULL);
         int ret;
+        int j;
 
         xs.xs_bind(s1, "tcp://127.0.0.1:6666");
         xs.xs_bind(s2, "tcp://127.0.0.1:6667");
@@ -97,21 +98,46 @@ public class Tester {
 
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 1: %d\n", ret);
+        for (j = 0; j < poller.getNext(); ++j)
+            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+                              j, poller.getSocket(j),
+                              j, poller.getInpEvent(j),
+                              j, poller.getOutEvent(j));
 
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 2: %d\n", ret);
+        for (j = 0; j < poller.getNext(); ++j)
+            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+                              j, poller.getSocket(j),
+                              j, poller.getInpEvent(j),
+                              j, poller.getOutEvent(j));
 
         poller.addSocket(s3, XsConstants.XS_POLLOUT);
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 3: %d\n", ret);
+        for (j = 0; j < poller.getNext(); ++j)
+            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+                              j, poller.getSocket(j),
+                              j, poller.getInpEvent(j),
+                              j, poller.getOutEvent(j));
 
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 4: %d\n", ret);
+        for (j = 0; j < poller.getNext(); ++j)
+            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+                              j, poller.getSocket(j),
+                              j, poller.getInpEvent(j),
+                              j, poller.getOutEvent(j));
         
         poller.reset();
         poller.addSocket(s3, XsConstants.XS_POLLOUT);
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 5: %d\n", ret);
+        for (j = 0; j < poller.getNext(); ++j)
+            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+                              j, poller.getSocket(j),
+                              j, poller.getInpEvent(j),
+                              j, poller.getOutEvent(j));
 
         poller = null;
         System.gc();

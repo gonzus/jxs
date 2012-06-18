@@ -8,6 +8,40 @@ public class XsPoller {
         reset();
     }
 
+    public int getNext()
+    {
+        return next;
+    }
+
+    public int getSize()
+    {
+        return size;
+    }
+
+    public long getSocket(int pos)
+    {
+        if (pos < 0 || pos >= next)
+            return -1;
+
+        return sock[pos];
+    }
+
+    public short getInpEvent(int pos)
+    {
+        if (pos < 0 || pos >= next)
+            return -1;
+
+        return einp[pos];
+    }
+
+    public short getOutEvent(int pos)
+    {
+        if (pos < 0 || pos >= next)
+            return -1;
+
+        return eout[pos];
+    }
+
     public void reset()
     {
         call_release();
@@ -33,6 +67,7 @@ public class XsPoller {
 
     public int poll(int timeout)
     {
+        /*
         int j;
         System.out.printf("XS will call poll: [%d:%x:%x:%d] [%d:%d]\n",
                           (poll_rdy ? 1 : 0), poll_mem, poll_idx, poll_siz,
@@ -41,8 +76,10 @@ public class XsPoller {
             System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
                               j, sock[j], j, einp[j], j, eout[j]);
         }
+        */
         int ret = 0;
         ret = call_poll(timeout);
+        /*
         System.out.printf("XS called poll: [%d:%x:%x:%d] [%d:%d] => %d\n",
                           (poll_rdy ? 1 : 0), poll_mem, poll_idx, poll_siz,
                           size, next, ret);
@@ -50,6 +87,7 @@ public class XsPoller {
             System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
                               j, sock[j], j, einp[j], j, eout[j]);
         }
+        */
         return ret;
     }
 
@@ -68,8 +106,10 @@ public class XsPoller {
             return;
 
         int nz = size+10;
+        /*
         System.out.printf("XS will enlarge array from %d to %d\n",
                           size, nz);
+        */
         long[] ns = new long[nz];
         short[] ni = new short[nz];
         short[] no = new short[nz];
