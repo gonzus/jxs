@@ -1,7 +1,7 @@
 jxs
 ===
 
-Java binding for `libxs` -- Crossroads IO
+Java binding for `libxs` -- the [Crossroads IO][1] library.
 
 
 What is this?
@@ -9,10 +9,10 @@ What is this?
 
 This package contains two Java bindings for `libxs`, the Crossroads IO library:
 
-1. A deprecated binding based on `JNA`.  This was the first
+1. A deprecated binding based on [JNA][2].  This was the first
    implementation in this package, but its performance was
    unacceptable.
-2. A supported binding based on `JNI`.  The performance for this
+2. A supported binding based on [JNI][3].  The performance for this
    binding is similar (but lower) to the performance for the native
    `libxs`.
 
@@ -21,9 +21,9 @@ How to Use
 
 You will need the following:
 
-1. A copy of the `JDK`.  The binding has been tested on `v1.6.0_30`
+1. A copy of the [JDK][4].  The binding has been tested on `v1.6.0_30`
    running on a Windows 7 machine.
-2. A copy of `ant`.  I use `v1.8.4`.
+2. A copy of [ant][5].  I use `v1.8.4`.
 3. When using JNI (the supported option), a C compiler.  I use MSVC
    2010.
 4. When using JNI (the supported option), a copy of `cpptasks`, an
@@ -67,6 +67,15 @@ The XS library is about 90% supported now.  Still missing are:
 License
 -------
 
-This project is released under the LGPL license, as is the native
-libxs library.  See LICENSE for more details as well as the Crossroads
-I/O Licensing page.
+This project is released under the [LGPL][6] license, as is the native
+libxs library.  See LICENSE for more details as well as the [Crossroads
+I/O Licensing][7] page.
+
+
+[1]: http://www.crossroads.io/                          "Crossroads I/O"
+[2]: http://en.wikipedia.org/wiki/Java_Native_Access    "Java Native Access"
+[3]: http://en.wikipedia.org/wiki/Java_Native_Interface "Java Native Interface"
+[4]: http://en.wikipedia.org/wiki/JDK                   "Java Development Kit"
+[5]: http://en.wikipedia.org/wiki/Apache_Ant            "Apache Ant"
+[6]: http://www.gnu.org/licenses/lgpl.html              "LGPL"
+[7]: http://www.crossroads.io/intro:license             "Crossroads I/O Licensing"
