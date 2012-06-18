@@ -39,7 +39,7 @@ public class local_thr {
         }
         System.out.printf("XS inited\n");
 
-        s = xs.xs_socket(ctx, xs.XS_PULL);
+        s = xs.xs_socket(ctx, XsConstants.XS_PULL);
         if (s == 0) {
             System.out.printf("error in xs_socket: %s\n",
                               xs.xs_strerror(xs.xs_errno()));

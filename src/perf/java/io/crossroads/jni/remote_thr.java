@@ -34,7 +34,7 @@ public class remote_thr {
         }
         System.out.printf("XS inited\n");
 
-        s = xs.xs_socket(ctx, XsLibrary.XS_PUSH);
+        s = xs.xs_socket(ctx, XsConstants.XS_PUSH);
         if (s == 0) {
             System.out.printf("error in xs_socket: %s\n",
                               xs.xs_strerror(xs.xs_errno()));

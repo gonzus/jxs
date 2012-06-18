@@ -1,4 +1,4 @@
-#include <xs/xs.h>
+#include "XsUtil.h"
 
 #include "io_crossroads_jni_XsConstants.h"
 
@@ -82,14 +82,12 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsConstants_loadConstants(JNIEnv* 
     int i;
     int n = 0;
  
-    /* Get a reference to obj's class */
     cls = (*env)->GetObjectClass(env, obj);
+    XS_ASSERT(cls);
     
     for (i = 0; K[i].name != 0; ++i) {
         fid = (*env)->GetStaticFieldID(env, cls, K[i].name, "I");
-        if (fid == NULL) {
-            continue;
-        }
+        XS_ASSERT(fid);
 
         (*env)->SetStaticIntField(env, cls, fid, K[i].value);
         ++n;

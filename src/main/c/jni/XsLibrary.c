@@ -1,4 +1,4 @@
-#include <xs/xs.h>
+#include "XsUtil.h"
 
 #include "io_crossroads_jni_XsLibrary.h"
 
@@ -8,28 +8,40 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1version(JNIEnv* env,
                                                                     jobject minor,
                                                                     jobject patch)
 {
-    jclass c;
-    jfieldID id;
-    int cmaj, cmin, cpat;
+    jclass cmaj = 0;
+    jclass cmin = 0;
+    jclass cpat = 0;
+    jfieldID fmaj = 0;
+    jfieldID fmin = 0;
+    jfieldID fpat = 0;
+    int imaj = 0;
+    int imin = 0;
+    int ipat = 0;
     
-    c = (*env)->FindClass(env, "java/lang/Integer");
-    if (c == 0) {
-        // LOGD("FindClass failed");
-        return -1;
-    }
+    cmaj = (*env)->GetObjectClass(env, major);
+    XS_ASSERT(cmaj);
 
-    id = (*env)->GetFieldID(env, c, "value", "I");
-    if (id == 0) {
-        // LOGD("GetFiledID failed");
-        return -1;
-    }
+    fmaj = (*env)->GetFieldID(env, cmaj, "value", "I");
+    XS_ASSERT(fmaj);
 
-    xs_version(&cmaj, &cmin, &cpat);
-    (*env)->SetIntField(env, major, id, cmaj);
-    (*env)->SetIntField(env, minor, id, cmin);
-    (*env)->SetIntField(env, patch, id, cpat);
+    cmin = (*env)->GetObjectClass(env, minor);
+    XS_ASSERT(cmin);
 
-    return (cmaj*100+cmin)*100+cpat;
+    fmin = (*env)->GetFieldID(env, cmin, "value", "I");
+    XS_ASSERT(fmin);
+
+    cpat = (*env)->GetObjectClass(env, patch);
+    XS_ASSERT(cpat);
+
+    fpat = (*env)->GetFieldID(env, cpat, "value", "I");
+    XS_ASSERT(fpat);
+
+    xs_version(&imaj, &imin, &ipat);
+    (*env)->SetIntField(env, major, fmaj, imaj);
+    (*env)->SetIntField(env, minor, fmin, imin);
+    (*env)->SetIntField(env, patch, fpat, ipat);
+
+    return (imaj*100+imin)*100+ipat;
 }
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1errno(JNIEnv* env,
@@ -42,18 +54,28 @@ JNIEXPORT jstring JNICALL Java_io_crossroads_jni_XsLibrary_xs_1strerror(JNIEnv* 
                                                                         jobject obj,
                                                                         jint errnum)
 {
-    const char* err = xs_strerror(errnum);
-    jstring answer = (*env)->NewStringUTF(env, err);
+    const char* err = 0;
+    jstring answer =  0;
+    
+    err = xs_strerror(errnum);
+    answer = (*env)->NewStringUTF(env, err);
+    XS_ASSERT(answer);
     return answer;
 }
 
 JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1init(JNIEnv* env,
                                                                   jobject obj)
 {
-    void* cont = xs_init();
-#if 0
-    fprintf(stderr, "xs_init() => %p\n", cont);
+    void* cont = 0;
+
+    cont = xs_init();
+
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_init() => %p\n",
+            cont);
 #endif
+
     return cont;
 }
 
@@ -62,11 +84,19 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1term(JNIEnv* env,
                                                                  jlong context)
 
 {
-    void* cont = (void*) context;
-    int ret = xs_term(cont);
-#if 0
-    fprintf(stderr, "xs_term(%p) => %d\n", cont, ret);
+    void* cont = 0;
+    int ret = 0;
+
+    cont = (void*) context;
+    XS_ASSERT(cont);
+    ret = xs_term(cont);
+
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_term(%p) => %d\n",
+            cont, ret);
 #endif
+    
     return ret;
 }
 
@@ -75,11 +105,19 @@ JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1socket(JNIEnv* env,
                                                                     jlong context,
                                                                     jint type)
 {
-    void* cont = (void*) context;
-    void* sock = xs_socket(cont, type);
-#if 0
-    fprintf(stderr, "xs_socket(%p, %d) => %p\n", cont, type, sock);
+    void* cont = 0;
+    void* sock =  0;
+
+    cont = (void*) context;
+    XS_ASSERT(cont);
+    sock = xs_socket(cont, type);
+    
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_socket(%p, %d) => %p\n",
+            cont, type, sock);
 #endif
+    
     return sock;
 }
 
@@ -87,11 +125,19 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1close(JNIEnv* env,
                                                                   jobject obj,
                                                                   jlong socket)
 {
-    void* sock = (void*) socket;
-    int ret = xs_close(sock);
-#if 0
-    fprintf(stderr, "xs_close(%p) => %d\n", sock, ret);
+    void* sock = 0;
+    int ret = 0;
+    
+    sock = (void*) socket;
+    XS_ASSERT(sock);
+    ret = xs_close(sock);
+    
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_close(%p) => %d\n",
+            sock, ret);
 #endif
+    
     return ret;
 }
 
@@ -100,12 +146,22 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1bind(JNIEnv* env,
                                                                  jlong socket,
                                                                  jstring address)
 {
-    void* sock = (void*) socket;
-    const char* addr = (*env)->GetStringUTFChars(env, address, NULL);
-    int ret = xs_bind(sock, addr);
-#if 0
-    fprintf(stderr, "xs_bind(%p, %s) => %d\n", sock, addr, ret);
+    void* sock = 0;
+    const char* addr = 0;
+    int ret = 0;
+
+    sock = (void*) socket;
+    XS_ASSERT(sock);
+    addr = (*env)->GetStringUTFChars(env, address, NULL);
+    XS_ASSERT(addr);
+    ret = xs_bind(sock, addr);
+    
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_bind(%p, %s) => %d\n",
+            sock, addr, ret);
 #endif
+    
     return ret;
 }
 
@@ -114,12 +170,22 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1connect(JNIEnv* env,
                                                                     jlong socket,
                                                                     jstring address)
 {
-    void* sock = (void*) socket;
-    const char* addr = (*env)->GetStringUTFChars(env, address, NULL);
-    int ret = xs_connect(sock, addr);
-#if 0
-    fprintf(stderr, "xs_bind(%p, %s) => %d\n", sock, addr, ret);
+    void* sock = 0;
+    const char* addr = 0;
+    int ret = 0;
+
+    sock = (void*) socket;
+    XS_ASSERT(sock);
+    addr = (*env)->GetStringUTFChars(env, address, NULL);
+    XS_ASSERT(addr);
+    ret = xs_connect(sock, addr);
+    
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_bind(%p, %s) => %d\n",
+            sock, addr, ret);
 #endif
+    
     return ret;
 }
 
@@ -128,11 +194,19 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1shutdown(JNIEnv* env
                                                                      jlong socket,
                                                                      jint how)
 {
-    void* sock = (void*) socket;
-    int ret = xs_shutdown(sock, how);
-#if 0
-    fprintf(stderr, "xs_shutdown(%p, %d) => %d\n", sock, how, ret);
+    void* sock = 0;
+    int ret = 0;
+
+    sock = (void*) socket;
+    XS_ASSERT(sock);
+    ret = xs_shutdown(sock, how);
+    
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_shutdown(%p, %d) => %d\n",
+            sock, how, ret);
 #endif
+    
     return ret;
 }
 
@@ -149,11 +223,14 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1send(JNIEnv* env,
     int ret = 0;
     
     sock = (void*) socket;
+    XS_ASSERT(sock);
     buf = (jbyte*) (*env)->GetDirectBufferAddress(env, buffer);
+    XS_ASSERT(buf);
     ret = xs_send(sock, buf, length, flags);
 
-#if 0
-    fprintf(stderr, "xs_send(%p, %p, %d, %d) => %d\n",
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_send(%p, %p, %d, %d) => %d\n",
             sock, buf, length, flags, ret);
 #endif
     
@@ -173,11 +250,14 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1recv(JNIEnv* env,
     int ret = 0;
 
     sock = (void*) socket;
+    XS_ASSERT(sock);
     buf = (jbyte*) (*env)->GetDirectBufferAddress(env, buffer);
+    XS_ASSERT(buf);
     ret = xs_recv(sock, buf, length, flags);
 
-#if 0
-    fprintf(stderr, "xs_recv(%p, %p, %d, %d) => %d\n",
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_recv(%p, %p, %d, %d) => %d\n",
             sock, buf, length, flags, ret);
 #endif
     
@@ -187,23 +267,35 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1recv(JNIEnv* env,
 JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1stopwatch_1start(JNIEnv* env,
                                                                               jobject obj)
 {
-    void* w = xs_stopwatch_start();
-#if 0
-    fprintf(stderr, "xs_stopwatch_start() => %p\n",
-            w);
+    void* wtch = 0;
+
+    wtch = xs_stopwatch_start();
+    
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_stopwatch_start() => %p\n",
+            wtch);
 #endif
-    return (jlong) w;
+    
+    return (jlong) wtch;
 }
 
 JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1stopwatch_1stop(JNIEnv* env,
                                                                              jobject obj,
                                                                              jlong watch)
 {
-    void* w = (void*) watch;
-    long ret = xs_stopwatch_stop(w);
-#if 0
-    fprintf(stderr, "xs_stopwatch_stop(%p) => %ld\n",
-            w, ret);
+    void* wtch = 0;
+    long ret = 0;
+
+    wtch = (void*) watch;
+    XS_ASSERT(wtch);
+    ret = xs_stopwatch_stop(wtch);
+    
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_stopwatch_stop(%p) => %ld\n",
+            wtch, ret);
 #endif
+    
     return ret;
 }
