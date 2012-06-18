@@ -63,12 +63,6 @@ public class XsLibrary {
                               int offset,
                               int length,
                               int flags);
-    /*
-     * TODO:
-    public native int xs_poll(xs_pollitem_t *items,
-                              int nitems,
-                              int timeout);
-    */
 
     public native long xs_stopwatch_start();
     public native long xs_stopwatch_stop(long watch);

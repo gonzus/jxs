@@ -9,6 +9,7 @@ public class Tester {
         tester.testErrors();
         tester.testVersion();
         tester.testSocket();
+        tester.testPoll();
         tester.dispose();
     }
 
@@ -60,10 +61,12 @@ public class Tester {
     }
 
     private void testErrors() {
-        int eAddrInUse = XsErrors.EADDRINUSE;
-        String msg = xs.xs_strerror(eAddrInUse);
         System.out.printf("XS string for EADDRINUSE (%d) is [%s]\n",
-                          eAddrInUse, msg);
+                          XsErrors.EADDRINUSE, xs.xs_strerror(XsErrors.EADDRINUSE));
+        System.out.printf("XS string for EINTR (%d) is [%s]\n",
+                          XsErrors.EINTR, xs.xs_strerror(XsErrors.EINTR));
+        System.out.printf("XS string for EFAULT (%d) is [%s]\n",
+                          XsErrors.EFAULT, xs.xs_strerror(XsErrors.EFAULT));
     }
 
     private void testSocket() {
@@ -76,6 +79,47 @@ public class Tester {
         System.out.printf("XS REQ socket shut down: %d\n", ret);
         ret = xs.xs_close(socket);
         System.out.printf("XS REQ socket closed: %d\n", ret);
+    }
+
+    private void testPoll() {
+        long s1 = xs.xs_socket(context, XsConstants.XS_REP);
+        long s2 = xs.xs_socket(context, XsConstants.XS_SUB);
+        long s3 = xs.xs_socket(context, XsConstants.XS_PULL);
+        int ret;
+
+        xs.xs_bind(s1, "tcp://127.0.0.1:6666");
+        xs.xs_bind(s2, "tcp://127.0.0.1:6667");
+        xs.xs_bind(s3, "tcp://127.0.0.1:6668");
+
+        XsPoller poller = new XsPoller();
+        poller.addSocket(s1, XsConstants.XS_POLLIN);
+        poller.addSocket(s2, XsConstants.XS_POLLIN | XsConstants.XS_POLLOUT);
+
+        ret = poller.poll(0);
+        System.out.printf("XS sockets polled 1: %d\n", ret);
+
+        ret = poller.poll(0);
+        System.out.printf("XS sockets polled 2: %d\n", ret);
+
+        poller.addSocket(s3, XsConstants.XS_POLLOUT);
+        ret = poller.poll(0);
+        System.out.printf("XS sockets polled 3: %d\n", ret);
+
+        ret = poller.poll(0);
+        System.out.printf("XS sockets polled 4: %d\n", ret);
+        
+        poller.reset();
+        poller.addSocket(s3, XsConstants.XS_POLLOUT);
+        ret = poller.poll(0);
+        System.out.printf("XS sockets polled 5: %d\n", ret);
+
+        poller = null;
+        System.gc();
+
+        xs.xs_close(s3);
+        xs.xs_close(s2);
+        xs.xs_close(s1);
+        System.out.printf("XS bye bye\n");
     }
 
     private XsLibrary xs = null;

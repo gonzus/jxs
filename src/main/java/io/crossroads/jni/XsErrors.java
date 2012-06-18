@@ -7,6 +7,15 @@ public class XsErrors {
         loadErrors();
     }
     
+    static public int ENOMEM = -1;
+    static public int EFAULT = -1;
+    static public int EINVAL = -1;
+    static public int EMFILE = -1;
+    static public int EINTR = -1;
+    static public int ENAMETOOLONG = -1;
+    static public int ENODEV = -1;
+    static public int EAGAIN = -1;
+    static public int ETIMEDOUT = -1;
     static public int ENOTSUP = -1;
     static public int EPROTONOSUPPORT = -1;
     static public int ENOBUFS = -1;

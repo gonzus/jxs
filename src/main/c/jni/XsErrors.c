@@ -9,6 +9,16 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsErrors_loadErrors(JNIEnv* env,
         const char* name;
         int value;
     } E[] = {
+        { "ENOMEM", ENOMEM },
+        { "EFAULT", EFAULT },
+        { "EINVAL", EINVAL },
+        { "EMFILE", EMFILE },
+        { "EINTR", EINTR },
+        { "ENAMETOOLONG", ENAMETOOLONG },
+        { "ENODEV", ENODEV },
+        { "EAGAIN", EAGAIN },
+        { "ETIMEDOUT", ETIMEDOUT },
+        // 
         { "ENOTSUP", ENOTSUP },
         { "EPROTONOSUPPORT", EPROTONOSUPPORT },
         { "ENOBUFS", ENOBUFS },
