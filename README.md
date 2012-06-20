@@ -52,6 +52,13 @@ Similarly, for the throughput test:
 `ant -Dcn=io.crossroads.jni.local_thr -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
 `ant -Dcn=io.crossroads.jni.remote_thr -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
 
+Finally, for the `inproc`-based latency and throughput tests (these do
+not require two command prompts):
+
+`ant -Dcn=io.crossroads.jni.inproc_lat -Dargs="1 100000" perf`
+
+`ant -Dcn=io.crossroads.jni.inproc_thr -Dargs="1 100000" perf`
+
 
 Status
 ------
