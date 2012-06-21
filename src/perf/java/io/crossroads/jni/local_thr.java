@@ -16,7 +16,7 @@ public class local_thr {
         int message_count;
         int message_size;
         long ctx = 0;
-        long s = 0;
+        long sock = 0;
         int rc;
         int i;
 
@@ -39,8 +39,8 @@ public class local_thr {
         }
         System.out.printf("XS inited\n");
 
-        s = xs.xs_socket(ctx, XsConstants.XS_PULL);
-        if (s == 0) {
+        sock = xs.xs_socket(ctx, XsConstants.XS_PULL);
+        if (sock == 0) {
             System.out.printf("error in xs_socket: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
@@ -49,7 +49,7 @@ public class local_thr {
 
         //  Add your socket options here.
 
-        rc = xs.xs_bind(s, bind_to);
+        rc = xs.xs_bind(sock, bind_to);
         if (rc == -1) {
             System.out.printf("error in xs_bind: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
@@ -60,7 +60,7 @@ public class local_thr {
         int size = 128;
         ByteBuffer bb = ByteBuffer.allocateDirect(size);
 
-        rc = xs.xs_recv(s, bb, 0, size, 0);
+        rc = xs.xs_recv(sock, bb, 0, size, 0);
         if (rc < 0) {
             System.out.printf("error in xs_recv: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
@@ -75,7 +75,7 @@ public class local_thr {
 
         System.out.printf("XS running %d iterations...\n", message_count - 1);
         for (i = 0; i != message_count - 1; i++) {
-            rc = xs.xs_recv(s, bb, 0, size, 0);
+            rc = xs.xs_recv(sock, bb, 0, size, 0);
             if (rc < 0) {
                 System.out.printf("error in xs_recv: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
@@ -99,7 +99,7 @@ public class local_thr {
         System.out.printf("mean throughput: %d [msg/s]\n", (int) throughput);
         System.out.printf("mean throughput: %.3f [Mb/s]\n", megabits);
 
-        rc = xs.xs_close(s);
+        rc = xs.xs_close(sock);
         if (rc != 0) {
             System.out.printf("error in xs_close: %s\n",
                               xs.xs_strerror(xs.xs_errno()));

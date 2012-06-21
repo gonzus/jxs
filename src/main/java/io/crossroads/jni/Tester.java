@@ -19,12 +19,12 @@ public class Tester {
     public void allocate() {
         System.out.printf("Starting Tester\n");
         xs = new XsLibrary();
-        context = xs.xs_init();
+        ctx = xs.xs_init();
     }
 
     public void dispose() {
-        xs.xs_term(context);
-        context = 0;
+        xs.xs_term(ctx);
+        ctx = 0;
         xs = null;
         System.out.printf("Finished Tester\n");
     }
@@ -218,32 +218,32 @@ public class Tester {
     private void testSocket() {
         System.out.printf("=== SOCKET ===\n");
         int ret;
-        long socket = xs.xs_socket(context, XsConstants.XS_REQ);
+        long sock = xs.xs_socket(ctx, XsConstants.XS_REQ);
         System.out.printf("XS REQ socket created\n");
-        int id = xs.xs_bind(socket, "tcp://127.0.0.1:6666");
+        int id = xs.xs_bind(sock, "tcp://127.0.0.1:6666");
         System.out.printf("XS REQ socket bound: %d\n", id);
-        ret = xs.xs_shutdown(socket, id);
+        ret = xs.xs_shutdown(sock, id);
         System.out.printf("XS REQ socket shut down: %d\n", ret);
-        ret = xs.xs_close(socket);
+        ret = xs.xs_close(sock);
         System.out.printf("XS REQ socket closed: %d\n", ret);
     }
 
     private void testPoll() {
         System.out.printf("=== POLL ===\n");
 
-        long s1 = xs.xs_socket(context, XsConstants.XS_REP);
-        long s2 = xs.xs_socket(context, XsConstants.XS_SUB);
-        long s3 = xs.xs_socket(context, XsConstants.XS_PULL);
+        long sock1 = xs.xs_socket(ctx, XsConstants.XS_REP);
+        long sock2 = xs.xs_socket(ctx, XsConstants.XS_SUB);
+        long sock3 = xs.xs_socket(ctx, XsConstants.XS_PULL);
         int ret;
         int j;
 
-        xs.xs_bind(s1, "tcp://127.0.0.1:6666");
-        xs.xs_bind(s2, "tcp://127.0.0.1:6667");
-        xs.xs_bind(s3, "tcp://127.0.0.1:6668");
+        xs.xs_bind(sock1, "tcp://127.0.0.1:6666");
+        xs.xs_bind(sock2, "tcp://127.0.0.1:6667");
+        xs.xs_bind(sock3, "tcp://127.0.0.1:6668");
 
         XsPoller poller = new XsPoller();
-        poller.addSocket(s1, XsConstants.XS_POLLIN);
-        poller.addSocket(s2, XsConstants.XS_POLLIN | XsConstants.XS_POLLOUT);
+        poller.addSocket(sock1, XsConstants.XS_POLLIN);
+        poller.addSocket(sock2, XsConstants.XS_POLLIN | XsConstants.XS_POLLOUT);
 
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 1: %d\n", ret);
@@ -259,7 +259,7 @@ public class Tester {
                               j, poller.getSocket(j),
                               poller.getInpEvent(j), poller.getOutEvent(j));
 
-        poller.addSocket(s3, XsConstants.XS_POLLOUT);
+        poller.addSocket(sock3, XsConstants.XS_POLLOUT);
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 3: %d\n", ret);
         for (j = 0; j < poller.getNext(); ++j)
@@ -275,7 +275,7 @@ public class Tester {
                               poller.getInpEvent(j), poller.getOutEvent(j));
         
         poller.reset();
-        poller.addSocket(s3, XsConstants.XS_POLLOUT);
+        poller.addSocket(sock3, XsConstants.XS_POLLOUT);
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 5: %d\n", ret);
         for (j = 0; j < poller.getNext(); ++j)
@@ -286,11 +286,11 @@ public class Tester {
         poller = null;
         System.gc();
 
-        xs.xs_close(s3);
-        xs.xs_close(s2);
-        xs.xs_close(s1);
+        xs.xs_close(sock3);
+        xs.xs_close(sock2);
+        xs.xs_close(sock1);
     }
 
     private XsLibrary xs = null;
-    long context = 0;
+    long ctx = 0;
 }

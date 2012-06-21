@@ -30,19 +30,19 @@ public class inproc_thr {
         
         private void do_run()
             throws InterruptedException {
-            long s;
+            long sock;
             int rc;
             int i;
             
-            s = xs.xs_socket(ctx, XsConstants.XS_PUSH);
-            if (s == 0) {
+            sock = xs.xs_socket(ctx, XsConstants.XS_PUSH);
+            if (sock == 0) {
                 System.out.printf("error in xs_socket: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
                 return;
             }
             System.out.printf("XS PUSH socket created\n");
 
-            rc = xs.xs_connect(s, addr);
+            rc = xs.xs_connect(sock, addr);
             if (rc == -1) {
                 System.out.printf("error in xs_connect(%s): %s\n",
                                   addr,
@@ -58,7 +58,7 @@ public class inproc_thr {
             System.out.printf("XS running %d iterations...\n",
                               message_count);
             for (i = 0; i != message_count; ++i) {
-                rc = xs.xs_send(s, bb, 0, message_size, 0);
+                rc = xs.xs_send(sock, bb, 0, message_size, 0);
                 if (rc < 0) {
                     System.out.printf("error in xs_send: %s\n",
                                       xs.xs_strerror(xs.xs_errno()));
@@ -70,7 +70,7 @@ public class inproc_thr {
                 }
             }
 
-            rc = xs.xs_close(s);
+            rc = xs.xs_close(sock);
             if (rc != 0) {
                 System.out.printf("error in xs_close: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
@@ -100,7 +100,7 @@ public class inproc_thr {
         int message_size;
         String addr = "inproc://thr_test";
         long ctx = 0;
-        long s = 0;
+        long sock = 0;
         int rc;
         int i;
         long watch = 0;
@@ -121,15 +121,15 @@ public class inproc_thr {
         }
         System.out.printf("XS inited\n");
 
-        s = xs.xs_socket(ctx, XsConstants.XS_PULL);
-        if (s == 0) {
+        sock = xs.xs_socket(ctx, XsConstants.XS_PULL);
+        if (sock == 0) {
             System.out.printf("error in xs_socket: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
         }
         System.out.printf("XS PULL socket created\n");
 
-        rc = xs.xs_bind(s, addr);
+        rc = xs.xs_bind(sock, addr);
         if (rc == -1) {
             System.out.printf("error in xs_bind(%s): %s\n",
                               addr,
@@ -149,7 +149,7 @@ public class inproc_thr {
                               addr,
                               done)).start();
         
-        rc = xs.xs_recv(s, bb, 0, size, 0);
+        rc = xs.xs_recv(sock, bb, 0, size, 0);
         if (rc < 0) {
             System.out.printf("error in xs_recv: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
@@ -165,7 +165,7 @@ public class inproc_thr {
         System.out.printf("XS running %d iterations...\n",
                           message_count - 1);
         for (i = 0; i != message_count - 1; ++i) {
-            rc = xs.xs_recv(s, bb, 0, size, 0);
+            rc = xs.xs_recv(sock, bb, 0, size, 0);
             if (rc < 0) {
                 System.out.printf("error in xs_recv: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
@@ -190,7 +190,7 @@ public class inproc_thr {
         System.out.printf("mean throughput: %d [msg/s]\n", (int) throughput);
         System.out.printf("mean throughput: %.3f [Mb/s]\n", megabits);
 
-        rc = xs.xs_close(s);
+        rc = xs.xs_close(sock);
         if (rc != 0) {
             System.out.printf("error in xs_close: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
