@@ -66,9 +66,7 @@ public class XsConstants {
     static public int XS_SNDTIMEO = -1;
     static public int XS_IPV4ONLY = -1;
     static public int XS_KEEPALIVE = -1;
-    static public int XS_PATTERN_VERSION = -1;
     static public int XS_SURVEY_TIMEOUT = -1;
-    static public int XS_SERVICE_ID = -1;
 
     /* Message options */
     static public int XS_MORE = -1;

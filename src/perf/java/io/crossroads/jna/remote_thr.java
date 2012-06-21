@@ -19,7 +19,7 @@ public class remote_thr {
         int message_count;
         int message_size;
         Pointer ctx = null;
-        Pointer s = null;
+        Pointer sock = null;
         int rc;
         int i;
 
@@ -38,8 +38,8 @@ public class remote_thr {
         }
         System.out.printf("XS inited\n");
 
-        s = xs.xs_socket(ctx, XsLibrary.XS_PUSH);
-        if (s == null) {
+        sock = xs.xs_socket(ctx, XsLibrary.XS_PUSH);
+        if (sock == null) {
             System.out.printf("error in xs_socket: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
@@ -48,7 +48,7 @@ public class remote_thr {
 
         //  Add your socket options here.
 
-        rc = xs.xs_connect(s, connect_to);
+        rc = xs.xs_connect(sock, connect_to);
         if (rc == -1) {
             System.out.printf("error in xs_connect: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
@@ -62,7 +62,7 @@ public class remote_thr {
 
         System.out.printf("XS running %d iterations...\n", message_count);
         for (i = 0; i != message_count; i++) {
-            rc = xs.xs_send(s, bba, message_size, 0);
+            rc = xs.xs_send(sock, bba, message_size, 0);
             if (rc < 0) {
                 System.out.printf("error in xs_send: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
@@ -74,7 +74,7 @@ public class remote_thr {
             }
         }
 
-        rc = xs.xs_close(s);
+        rc = xs.xs_close(sock);
         if (rc != 0) {
             System.out.printf("error in xs_close: %s\n",
                               xs.xs_strerror(xs.xs_errno()));

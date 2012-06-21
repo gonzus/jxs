@@ -25,28 +25,11 @@ public class XsLibrary {
 
     public native long xs_init();
     public native int xs_term(long context);
-    /*
-     * TODO:
-    public native int xs_setctxopt(long context,
-                                   int option,
-                                   const void* optval,
-                                   int optvallen);
-    */
     
     public native long xs_socket(long context,
                                  int type);
     public native int xs_close(long socket);
-    /*
-     * TODO:
-    public native int xs_setsockopt(long context,
-                                    int option,
-                                    const void* optval,
-                                    int optvallen);
-    public native int xs_getsockopt(long context,
-                                    int option,
-                                    void* optval,
-                                    int optvallen);
-    */
+
     public native int xs_bind(long socket,
                               String address);
     public native int xs_connect (long socket,
@@ -64,6 +47,37 @@ public class XsLibrary {
                               int length,
                               int flags);
 
+    /*
+     * TODO:
+     
+    public native int xs_setctxopt(long context,
+                                   int option,
+                                   const void* optval,
+                                   int optvallen);
+
+    public native int xs_setsockopt_int(long context,
+                                        int option,
+                                        int val);
+    public native int xs_setsockopt_long(long context,
+                                         int option,
+                                         long val);
+    public native int xs_setsockopt_binary(long context,
+                                           int option,
+                                           Byte[] val);
+    
+    public native int xs_getsockopt_int(long context,
+                                        int option,
+                                        int* val);
+
+    public native int xs_getsockopt_long(long context,
+                                         int option,
+                                         long* val);
+    
+    public native int xs_getsockopt_binary(long context,
+                                           int option,
+                                           Byte[] val);
+    */
+    
     public native long xs_stopwatch_start();
     public native long xs_stopwatch_stop(long watch);
 

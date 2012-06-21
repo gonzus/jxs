@@ -39,6 +39,7 @@ public class Tester {
     }
     
     private void testVersion() {
+        System.out.printf("=== VERSION ===\n");
         Integer major = new Integer(0);
         Integer minor = new Integer(0);
         Integer patch = new Integer(0);
@@ -51,25 +52,171 @@ public class Tester {
     }
 
     private void testConstants() {
-        System.out.printf("Constants for v%d.%d.%d: %s=%d, %s=%d, %s=%d\n",
-                          XsConstants.XS_VERSION_MAJOR,
-                          XsConstants.XS_VERSION_MINOR,
-                          XsConstants.XS_VERSION_PATCH,
-                          "XS_PUB", XsConstants.XS_PUB,
-                          "XS_PUSH", XsConstants.XS_PUSH,
+        System.out.printf("=== CONSTANTS ===\n");
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_VERSION_MAJOR", XsConstants.XS_VERSION_MAJOR);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_VERSION_MINOR", XsConstants.XS_VERSION_MINOR);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_VERSION_PATCH", XsConstants.XS_VERSION_PATCH);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_VERSION", XsConstants.XS_VERSION);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_PAIR", XsConstants.XS_PAIR);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_PUB", XsConstants.XS_PUB);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_SUB", XsConstants.XS_SUB);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_REQ", XsConstants.XS_REQ);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_REP", XsConstants.XS_REP);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_XREQ", XsConstants.XS_XREQ);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_XREP", XsConstants.XS_XREP);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_PULL", XsConstants.XS_PULL);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_PUSH", XsConstants.XS_PUSH);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_XPUB", XsConstants.XS_XPUB);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_XSUB", XsConstants.XS_XSUB);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_SURVEYOR", XsConstants.XS_SURVEYOR);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_RESPONDENT", XsConstants.XS_RESPONDENT);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_XSURVEYOR", XsConstants.XS_XSURVEYOR);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_XRESPONDENT", XsConstants.XS_XRESPONDENT);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_ROUTER", XsConstants.XS_ROUTER);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_DEALER", XsConstants.XS_DEALER);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_MAX_SOCKETS", XsConstants.XS_MAX_SOCKETS);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_IO_THREADS", XsConstants.XS_IO_THREADS);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_PLUGIN", XsConstants.XS_PLUGIN);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_AFFINITY", XsConstants.XS_AFFINITY);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_IDENTITY", XsConstants.XS_IDENTITY);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_SUBSCRIBE", XsConstants.XS_SUBSCRIBE);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_UNSUBSCRIBE", XsConstants.XS_UNSUBSCRIBE);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_RATE", XsConstants.XS_RATE);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_RECOVERY_IVL", XsConstants.XS_RECOVERY_IVL);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_SNDBUF", XsConstants.XS_SNDBUF);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_RCVBUF", XsConstants.XS_RCVBUF);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_RCVMORE", XsConstants.XS_RCVMORE);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_FD", XsConstants.XS_FD);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_EVENTS", XsConstants.XS_EVENTS);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_TYPE", XsConstants.XS_TYPE);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_LINGER", XsConstants.XS_LINGER);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_RECONNECT_IVL", XsConstants.XS_RECONNECT_IVL);
+        System.out.printf("Constant %20s = %d\n",
                           "XS_BACKLOG", XsConstants.XS_BACKLOG);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_RECONNECT_IVL_MAX", XsConstants.XS_RECONNECT_IVL_MAX);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_MAXMSGSIZE", XsConstants.XS_MAXMSGSIZE);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_SNDHWM", XsConstants.XS_SNDHWM);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_RCVHWM", XsConstants.XS_RCVHWM);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_MULTICAST_HOPS", XsConstants.XS_MULTICAST_HOPS);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_RCVTIMEO", XsConstants.XS_RCVTIMEO);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_SNDTIMEO", XsConstants.XS_SNDTIMEO);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_IPV4ONLY", XsConstants.XS_IPV4ONLY);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_KEEPALIVE", XsConstants.XS_KEEPALIVE);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_SURVEY_TIMEOUT", XsConstants.XS_SURVEY_TIMEOUT);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_MORE", XsConstants.XS_MORE);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_DONTWAIT", XsConstants.XS_DONTWAIT);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_SNDMORE", XsConstants.XS_SNDMORE);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_POLLIN", XsConstants.XS_POLLIN);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_POLLOUT", XsConstants.XS_POLLOUT);
+        System.out.printf("Constant %20s = %d\n",
+                          "XS_POLLERR", XsConstants.XS_POLLERR);
     }
 
     private void testErrors() {
-        System.out.printf("XS string for EADDRINUSE (%d) is [%s]\n",
-                          XsErrors.EADDRINUSE, xs.xs_strerror(XsErrors.EADDRINUSE));
-        System.out.printf("XS string for EINTR (%d) is [%s]\n",
-                          XsErrors.EINTR, xs.xs_strerror(XsErrors.EINTR));
-        System.out.printf("XS string for EFAULT (%d) is [%s]\n",
-                          XsErrors.EFAULT, xs.xs_strerror(XsErrors.EFAULT));
+        System.out.printf("=== ERRORS ===\n");
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ENOMEM", XsErrors.ENOMEM, xs.xs_strerror(XsErrors.ENOMEM));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EFAULT", XsErrors.EFAULT, xs.xs_strerror(XsErrors.EFAULT));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EINVAL", XsErrors.EINVAL, xs.xs_strerror(XsErrors.EINVAL));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EMFILE", XsErrors.EMFILE, xs.xs_strerror(XsErrors.EMFILE));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EINTR", XsErrors.EINTR, xs.xs_strerror(XsErrors.EINTR));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ENAMETOOLONG", XsErrors.ENAMETOOLONG, xs.xs_strerror(XsErrors.ENAMETOOLONG));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ENODEV", XsErrors.ENODEV, xs.xs_strerror(XsErrors.ENODEV));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EAGAIN", XsErrors.EAGAIN, xs.xs_strerror(XsErrors.EAGAIN));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ETIMEDOUT", XsErrors.ETIMEDOUT, xs.xs_strerror(XsErrors.ETIMEDOUT));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ENOTSUP", XsErrors.ENOTSUP, xs.xs_strerror(XsErrors.ENOTSUP));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EPROTONOSUPPORT", XsErrors.EPROTONOSUPPORT, xs.xs_strerror(XsErrors.EPROTONOSUPPORT));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ENOBUFS", XsErrors.ENOBUFS, xs.xs_strerror(XsErrors.ENOBUFS));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ENETDOWN", XsErrors.ENETDOWN, xs.xs_strerror(XsErrors.ENETDOWN));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EADDRINUSE", XsErrors.EADDRINUSE, xs.xs_strerror(XsErrors.EADDRINUSE));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EADDRNOTAVAIL", XsErrors.EADDRNOTAVAIL, xs.xs_strerror(XsErrors.EADDRNOTAVAIL));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ECONNREFUSED", XsErrors.ECONNREFUSED, xs.xs_strerror(XsErrors.ECONNREFUSED));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EINPROGRESS", XsErrors.EINPROGRESS, xs.xs_strerror(XsErrors.EINPROGRESS));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ENOTSOCK", XsErrors.ENOTSOCK, xs.xs_strerror(XsErrors.ENOTSOCK));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EAFNOSUPPORT", XsErrors.EAFNOSUPPORT, xs.xs_strerror(XsErrors.EAFNOSUPPORT));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EFSM", XsErrors.EFSM, xs.xs_strerror(XsErrors.EFSM));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ENOCOMPATPROTO", XsErrors.ENOCOMPATPROTO, xs.xs_strerror(XsErrors.ENOCOMPATPROTO));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "ETERM", XsErrors.ETERM, xs.xs_strerror(XsErrors.ETERM));
+        System.out.printf("Error %20s = %9d - [%s]\n",
+                          "EMTHREAD", XsErrors.EMTHREAD, xs.xs_strerror(XsErrors.EMTHREAD));
     }
 
     private void testSocket() {
+        System.out.printf("=== SOCKET ===\n");
         int ret;
         long socket = xs.xs_socket(context, XsConstants.XS_REQ);
         System.out.printf("XS REQ socket created\n");
@@ -82,6 +229,8 @@ public class Tester {
     }
 
     private void testPoll() {
+        System.out.printf("=== POLL ===\n");
+
         long s1 = xs.xs_socket(context, XsConstants.XS_REP);
         long s2 = xs.xs_socket(context, XsConstants.XS_SUB);
         long s3 = xs.xs_socket(context, XsConstants.XS_PULL);
@@ -99,45 +248,40 @@ public class Tester {
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 1: %d\n", ret);
         for (j = 0; j < poller.getNext(); ++j)
-            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+            System.out.printf("XS   item[%2d]: sock = %8x | einp = %4d | eout = %4d\n",
                               j, poller.getSocket(j),
-                              j, poller.getInpEvent(j),
-                              j, poller.getOutEvent(j));
+                              poller.getInpEvent(j), poller.getOutEvent(j));
 
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 2: %d\n", ret);
         for (j = 0; j < poller.getNext(); ++j)
-            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+            System.out.printf("XS   item[%2d]: sock = %8x | einp = %4d | eout = %4d\n",
                               j, poller.getSocket(j),
-                              j, poller.getInpEvent(j),
-                              j, poller.getOutEvent(j));
+                              poller.getInpEvent(j), poller.getOutEvent(j));
 
         poller.addSocket(s3, XsConstants.XS_POLLOUT);
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 3: %d\n", ret);
         for (j = 0; j < poller.getNext(); ++j)
-            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+            System.out.printf("XS   item[%2d]: sock = %8x | einp = %4d | eout = %4d\n",
                               j, poller.getSocket(j),
-                              j, poller.getInpEvent(j),
-                              j, poller.getOutEvent(j));
+                              poller.getInpEvent(j), poller.getOutEvent(j));
 
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 4: %d\n", ret);
         for (j = 0; j < poller.getNext(); ++j)
-            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+            System.out.printf("XS   item[%2d]: sock = %8x | einp = %4d | eout = %4d\n",
                               j, poller.getSocket(j),
-                              j, poller.getInpEvent(j),
-                              j, poller.getOutEvent(j));
+                              poller.getInpEvent(j), poller.getOutEvent(j));
         
         poller.reset();
         poller.addSocket(s3, XsConstants.XS_POLLOUT);
         ret = poller.poll(0);
         System.out.printf("XS sockets polled 5: %d\n", ret);
         for (j = 0; j < poller.getNext(); ++j)
-            System.out.printf("XS   sock[%2d] = %8x | einp[%2d] = %4d | eout[%2d] = %4d\n",
+            System.out.printf("XS   item[%2d]: sock = %8x | einp = %4d | eout = %4d\n",
                               j, poller.getSocket(j),
-                              j, poller.getInpEvent(j),
-                              j, poller.getOutEvent(j));
+                              poller.getInpEvent(j), poller.getOutEvent(j));
 
         poller = null;
         System.gc();
@@ -145,7 +289,6 @@ public class Tester {
         xs.xs_close(s3);
         xs.xs_close(s2);
         xs.xs_close(s1);
-        System.out.printf("XS bye bye\n");
     }
 
     private XsLibrary xs = null;

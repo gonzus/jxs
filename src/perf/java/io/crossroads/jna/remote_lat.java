@@ -18,7 +18,7 @@ public class remote_lat {
         int roundtrip_count;
         int message_size;
         Pointer ctx = null;
-        Pointer s = null;
+        Pointer sock = null;
         int rc;
         int i;
 
@@ -40,15 +40,15 @@ public class remote_lat {
         }
         System.out.printf("XS inited\n");
 
-        s = xs.xs_socket(ctx, XsLibrary.XS_REQ);
-        if (s == null) {
+        sock = xs.xs_socket(ctx, XsLibrary.XS_REQ);
+        if (sock == null) {
             System.out.printf("error in xs_socket: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
             return;
         }
         System.out.printf("XS REQ socket created\n");
 
-        rc = xs.xs_connect(s, connect_to);
+        rc = xs.xs_connect(sock, connect_to);
         if (rc == -1) {
             System.out.printf("error in xs_connect: %s\n",
                               xs.xs_strerror(xs.xs_errno()));
@@ -64,7 +64,7 @@ public class remote_lat {
 
         System.out.printf("XS running %d iterations...\n", roundtrip_count);
         for (i = 0; i != roundtrip_count; i++) {
-            rc = xs.xs_send(s, bba, message_size, 0);
+            rc = xs.xs_send(sock, bba, message_size, 0);
             if (rc < 0) {
                 System.out.printf("error in xs_send: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
@@ -75,7 +75,7 @@ public class remote_lat {
                 return;
             }
 
-            rc = xs.xs_recv(s, bba, size, 0);
+            rc = xs.xs_recv(sock, bba, size, 0);
             if (rc < 0) {
                 System.out.printf("error in xs_recv: %s\n",
                                   xs.xs_strerror(xs.xs_errno()));
@@ -95,7 +95,7 @@ public class remote_lat {
         System.out.printf("roundtrip count: %d\n", roundtrip_count);
         System.out.printf("average latency: %.3f [us]\n", latency);
 
-        rc = xs.xs_close(s);
+        rc = xs.xs_close(sock);
         if (rc != 0) {
             System.out.printf("error in xs_close: %s\n",
                               xs.xs_strerror(xs.xs_errno()));

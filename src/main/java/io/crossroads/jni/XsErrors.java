@@ -16,6 +16,7 @@ public class XsErrors {
     static public int ENODEV = -1;
     static public int EAGAIN = -1;
     static public int ETIMEDOUT = -1;
+
     static public int ENOTSUP = -1;
     static public int EPROTONOSUPPORT = -1;
     static public int ENOBUFS = -1;
@@ -26,6 +27,7 @@ public class XsErrors {
     static public int EINPROGRESS = -1;
     static public int ENOTSOCK = -1;
     static public int EAFNOSUPPORT = -1;
+
     static public int EFSM = -1;
     static public int ENOCOMPATPROTO = -1;
     static public int ETERM = -1;

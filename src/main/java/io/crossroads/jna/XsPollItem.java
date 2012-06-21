@@ -13,17 +13,26 @@ public class XsPollItem
 
     public XsPollItem() {
         super();
+        this.socket = null;
+        this.fd = null;
+        this.events = 0;
+        this.revents = 0;
     }
 
     public XsPollItem(Pointer socket,
                       Pointer fd,
                       short events)
     {
-        super();
+        this();
         this.socket = socket;
         this.fd = fd;
         this.events = events;
-        this.revents = 0;
+    }
+
+    public XsPollItem(Pointer socket,
+                      short events)
+    {
+        this(socket, null, events);
     }
 
     public static class ByReference
