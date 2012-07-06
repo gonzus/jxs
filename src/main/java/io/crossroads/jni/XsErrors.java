@@ -31,7 +31,6 @@ public class XsErrors {
     static public int EFSM = -1;
     static public int ENOCOMPATPROTO = -1;
     static public int ETERM = -1;
-    static public int EMTHREAD = -1;
 
     native private int loadErrors();
 }

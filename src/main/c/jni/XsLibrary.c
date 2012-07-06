@@ -58,6 +58,11 @@ JNIEXPORT jstring JNICALL Java_io_crossroads_jni_XsLibrary_xs_1strerror(JNIEnv* 
     jstring answer =  0;
     
     err = xs_strerror(errnum);
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "Got error for %d: [%s]\n",
+            errnum, err);
+#endif
     answer = (*env)->NewStringUTF(env, err);
     XS_ASSERT(answer);
     return answer;

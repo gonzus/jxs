@@ -32,7 +32,6 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsErrors_loadErrors(JNIEnv* env,
         { "EFSM", EFSM },
         { "ENOCOMPATPROTO", ENOCOMPATPROTO },
         { "ETERM", ETERM },
-        { "EMTHREAD", EMTHREAD },
         { 0, 0 },
     };
     jclass cls;

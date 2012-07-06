@@ -1,32 +1,45 @@
 package io.crossroads.jni;
 
+import java.nio.ByteBuffer;
+
 public class Tester {
     public static void main(String [] args) {
         Tester tester = new Tester();
         tester.allocate();
         tester.testLibrary();
+        tester.testVersion();
         tester.testConstants();
         tester.testErrors();
-        tester.testVersion();
         tester.testSocket();
+        tester.testOption();
         tester.testPoll();
+        tester.testPrintf();
         tester.dispose();
     }
 
     public Tester() {
     }
     
-    public void allocate() {
+    private void allocate() {
         System.out.printf("Starting Tester\n");
         xs = new XsLibrary();
         ctx = xs.xs_init();
     }
 
-    public void dispose() {
+    private void dispose() {
         xs.xs_term(ctx);
         ctx = 0;
         xs = null;
         System.out.printf("Finished Tester\n");
+    }
+
+    private boolean testPrintf() {
+        int i = 0;
+        Integer j =  33;
+        System.out.printf("1: xsLibrary: i=%d, j=%d\n", i, j);
+        System.out.println("2: xsLibrary: i=" + i + ", j=" + j);
+
+        return true;
     }
 
     private boolean testLibrary() {
@@ -211,8 +224,6 @@ public class Tester {
                           "ENOCOMPATPROTO", XsErrors.ENOCOMPATPROTO, xs.xs_strerror(XsErrors.ENOCOMPATPROTO));
         System.out.printf("Error %20s = %9d - [%s]\n",
                           "ETERM", XsErrors.ETERM, xs.xs_strerror(XsErrors.ETERM));
-        System.out.printf("Error %20s = %9d - [%s]\n",
-                          "EMTHREAD", XsErrors.EMTHREAD, xs.xs_strerror(XsErrors.EMTHREAD));
     }
 
     private void testSocket() {
@@ -224,6 +235,165 @@ public class Tester {
         System.out.printf("XS REQ socket bound: %d\n", id);
         ret = xs.xs_shutdown(sock, id);
         System.out.printf("XS REQ socket shut down: %d\n", ret);
+        ret = xs.xs_close(sock);
+        System.out.printf("XS REQ socket closed: %d\n", ret);
+    }
+
+    private void testOption() {
+        System.out.printf("=== OPTION ===\n");
+        int ret;
+        Integer iget;
+        Long lget;
+        ByteBuffer bget = ByteBuffer.allocateDirect(1024);
+        int iset;
+        long lset;
+        ByteBuffer bset = ByteBuffer.allocateDirect(1024);
+        String sid = "This is a TEST";
+        String snew = "";
+        
+        long sock = xs.xs_socket(ctx, XsConstants.XS_REQ);
+        XsOption option = new XsOption();
+        option.setSocket(sock);
+
+        iget = 0;
+        ret = option.getSockoptInt(XsConstants.XS_TYPE, iget);
+        System.out.println("XS get socket type (" +
+                           XsConstants.XS_TYPE +
+                           "): " +
+                           iget + 
+                           " [" +
+                           XsConstants.XS_REQ + 
+                           "] (" +
+                           ret +
+                           ")");
+
+        lget = 0L;
+        ret = option.getSockoptLong(XsConstants.XS_MAXMSGSIZE, lget);
+        System.out.println("XS get socket max msg size (" +
+                           XsConstants.XS_MAXMSGSIZE +
+                           "): " +
+                           lget + 
+                           " (" +
+                           ret +
+                           ")");
+
+        snew = "";
+        ret = option.getSockoptBuffer(XsConstants.XS_IDENTITY, bget);
+        if (bget.limit() > 0) {
+            byte[] bnew = new byte[bget.limit()];
+            bget.get(bnew);
+            snew = new String(bnew);
+        }
+        System.out.println("XS get socket identity (" +
+                           XsConstants.XS_IDENTITY +
+                           "): " +
+                           bget.limit() +
+                           ":[" +
+                           snew +
+                           "] (" +
+                           ret +
+                           ")");
+
+        iget = 0;
+        ret = option.getSockoptInt(XsConstants.XS_IPV4ONLY, iget);
+        System.out.println("XS get socket IPv4 only (" +
+                           XsConstants.XS_IPV4ONLY +
+                           "): " +
+                           iget + 
+                           " (" +
+                           ret +
+                           ")");
+
+        iset = 1 - iget;
+        ret = option.setSockoptInt(XsConstants.XS_IPV4ONLY, iset);
+        System.out.println("XS set socket IPv4 only to " +
+                           iset + 
+                           " (" +
+                           ret +
+                           ")");
+
+        iget = 0;
+        ret = option.getSockoptInt(XsConstants.XS_IPV4ONLY, iget);
+        System.out.println("XS get socket IPv4 only (" +
+                           XsConstants.XS_IPV4ONLY +
+                           "): " +
+                           iget + 
+                           " (" +
+                           ret +
+                           ")");
+
+        lget = 0L;
+        ret = option.getSockoptLong(XsConstants.XS_MAXMSGSIZE, lget);
+        System.out.println("XS get socket max msg size (" +
+                           XsConstants.XS_MAXMSGSIZE +
+                           "): " +
+                           lget + 
+                           " (" +
+                           ret +
+                           ")");
+
+        lset = 1011L;
+        ret = option.setSockoptLong(XsConstants.XS_MAXMSGSIZE, lset);
+        System.out.println("XS set socket max msg size to " +
+                           lset + 
+                           " (" +
+                           ret +
+                           ")");
+
+        lget = 0L;
+        ret = option.getSockoptLong(XsConstants.XS_MAXMSGSIZE, lget);
+        System.out.println("XS get socket max msg size (" +
+                           XsConstants.XS_MAXMSGSIZE +
+                           "): " +
+                           lget + 
+                           " (" +
+                           ret +
+                           ")");
+        
+        snew = "";
+        ret = option.getSockoptBuffer(XsConstants.XS_IDENTITY, bget);
+        if (bget.limit() > 0) {
+            byte[] bnew = new byte[bget.limit()];
+            bget.get(bnew);
+            snew = new String(bnew);
+        }
+        System.out.println("XS get socket identity (" +
+                           XsConstants.XS_IDENTITY +
+                           "): " +
+                           bget.limit() +
+                           ":[" +
+                           snew +
+                           "] (" +
+                           ret +
+                           ")");
+
+        bset.clear();
+        bset.put(sid.getBytes());
+        bset.flip();
+        ret = option.setSockoptBuffer(XsConstants.XS_IDENTITY, bset);
+        System.out.println("XS set socket identity to [" +
+                           sid +
+                           "] (" +
+                           ret +
+                           ")");
+
+        ret = option.getSockoptBuffer(XsConstants.XS_IDENTITY, bget);
+        snew = "";
+        if (bget.limit() > 0) {
+            byte[] bnew = new byte[bget.limit()];
+            bget.get(bnew);
+            snew = new String(bnew);
+        }
+        System.out.println("XS get socket identity (" +
+                           XsConstants.XS_IDENTITY +
+                           "): " +
+                           bget.limit() +
+                           ":[" +
+                           snew +
+                           "] (" +
+                           ret +
+                           ")");
+
         ret = xs.xs_close(sock);
         System.out.printf("XS REQ socket closed: %d\n", ret);
     }

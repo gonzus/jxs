@@ -1,15 +1,13 @@
 package io.crossroads.jni;
 
+import java.nio.ByteBuffer;
+
 public class XsOption {
 
     public XsOption()
     {
         context = 0;
         socket = 0;
-
-        opt_int = 0;
-        opt_long = 0L;
-        opt_binary = null;
     }
 
     public void setContext(long context)
@@ -22,57 +20,82 @@ public class XsOption {
         this.socket = socket;
     }
 
-    public void setSockoptInt(int option,
-                              int value)
+    public int getSockoptInt(int optidx,
+                             Integer optval)
     {
-        call_setsockopt_int(option, value);
+        // System.out.println("calling getSockOptInt(" + optidx + ")");
+        int ret = call_getsockopt_int(optidx, optval);
+        // System.out.println("called getSockOptInt(" + optidx + ") => " + optval + " (" + ret + ")");
+        return ret;
     }
 
-    public int getSockoptInt(int option)
+    public int getSockoptLong(int optidx,
+                              Long optval)
     {
-        int ret = call_getsockopt_int(option);
-        return opt_int;
+        // System.out.println("calling getSockOptLong(" + optidx + ")");
+        int ret = call_getsockopt_long(optidx, optval);
+        // System.out.println("called getSockOptLong(" + optidx + ") => " + optval + " (" + ret + ")");
+        return ret;
     }
 
-    public void setSockoptLong(int option,
-                              long value)
+    public int getSockoptBuffer(int optidx,
+                                ByteBuffer optval)
     {
-        call_setsockopt_long(option, value);
+        optval.clear();
+        // System.out.println("calling getSockOptBuffer(" + optidx + ")");
+        int ret = call_getsockopt_buff(optidx, optval);
+        if (ret >= 0) {
+            optval.position(ret);
+            optval.flip();
+        }
+        // System.out.println("called getSockOptBuffer(" + optidx + ") => [" + optval + "] (" + ret + ")");
+        return ret;
     }
 
-    public long getSockoptLong(int option)
+    public int setSockoptInt(int optidx,
+                             int optval)
     {
-        int ret = call_getsockopt_long(option);
-        return opt_long;
+        // System.out.println("calling setSockOptInt(" + optidx + ") to " + optval);
+        int ret = call_setsockopt_int(optidx, optval);
+        // System.out.println("called setSockOptInt(" + optidx + ") => " + ret);
+        return ret;
     }
 
-    public void setSockoptBinary(int option,
-                                 Byte[] value)
+    public int setSockoptLong(int optidx,
+                              long optval)
     {
-        call_setsockopt_binary(option, value);
+        // System.out.println("calling setSockOptLong(" + optidx + ") to " + optval);
+        int ret = call_setsockopt_long(optidx, optval);
+        // System.out.println("called setSockOptLong(" + optidx + ") => " + ret);
+        return ret;
     }
 
-    public Byte[] getSockoptBinary(int option)
+    public int setSockoptBuffer(int optidx,
+                                ByteBuffer optval)
     {
-        int ret = call_getsockopt_binary(option);
-        return opt_binary;
+        // System.out.println("calling setSockOptBuffer(" + optidx + ") to [" + optval + "]");
+        int ret = call_setsockopt_buff(optidx, optval);
+        if (ret >= 0) {
+            optval.clear();
+        }
+        // System.out.println("called setSockOptBuffer(" + optidx + ") => " + ret);
+        return ret;
     }
 
+    private native int call_getsockopt_int(int optidx,
+                                           Integer optval);
+    private native int call_getsockopt_long(int optidx,
+                                            Long optval);
+    private native int call_getsockopt_buff(int optidx,
+                                            ByteBuffer optval);
 
-    private native void call_setsockopt_int(int option,
-                                            int value);
-    private native void call_setsockopt_long(int option,
-                                             long value);
-    private native void call_setsockopt_binary(int option,
-                                               Byte[] value);
-    private native int call_getsockopt_int(int option);
-    private native int call_getsockopt_long(int option);
-    private native int call_getsockopt_binary(int option);
-
+    private native int call_setsockopt_int(int optidx,
+                                           int optval);
+    private native int call_setsockopt_long(int optidx,
+                                            long optval);
+    private native int call_setsockopt_buff(int optidx,
+                                            ByteBuffer optval);
+    
     private long context;
     private long socket;
-
-    Integer opt_int;
-    Long opt_long;
-    Byte[] opt_binary;
 }
