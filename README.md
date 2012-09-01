@@ -55,8 +55,10 @@ ant -v -lib lib/ant/cpptasks-1.0b5.jar jar
 
 `ant -Dcn=io.crossroads.jni.Tester run`
 
-To run the latency test you would have to create two command prompts
-and run the following (one command in each prompt):
+You may need to specify the path to the libxs.(dll,dylib,so).
+
+ * MacOSX: `DYLD_LIBRARY_PATH=../libxs/lib ant -Dcn=io.crossroads.jni.Tester run`
+ * Unix: `LD_LIBRARY_PATH=../libxs/lib ant -Dcn=io.crossroads.jni.Tester run`
 
 `ant -Dcn=io.crossroads.jni.local_lat -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
 `ant -Dcn=io.crossroads.jni.remote_lat -Dargs="tcp://127.0.0.1:5556 1 100000" perf`
