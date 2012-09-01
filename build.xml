@@ -229,6 +229,7 @@
   </target>
 
   <target name="compile.test" depends="jar.main">
+    <mkdir dir="${dir.src.test.java}"/>
     <javac includeantruntime="false"
            destdir="${dir.jbuild.test}"
            debug="true">
@@ -245,6 +246,7 @@
   </target>
 
   <target name="compile.perf" depends="jar.main">
+    <mkdir dir="${dir.lib.perf}"/>
     <javac includeantruntime="false"
            destdir="${dir.jbuild.perf}"
            debug="true">
