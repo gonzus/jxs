@@ -8,7 +8,6 @@
 
 
   <!-- PROPERTIES -->
-
   <property name="project" value="${ant.project.name}"/>
 
   <property name="version_major" value="0"/>
@@ -53,12 +52,12 @@
   <property name="dir.cbuild" location="${dir.build}/c"/>
   <property name="dir.cbuild.main" location="${dir.cbuild}/main"/>
   <property name="dir.cbuild.main.jni" location="${dir.cbuild}/main/jni"/>
-  <property name="dir.cbuild.dll" location="${dir.cbuild}/dll"/>
+  <property name="dir.cbuild.sharedlibrary" location="${dir.cbuild}/sharedlibrary"/>
 
   <property name="file.jar.main" value="${dir.jbuild.jar}/${project}-${version}.jar"/>
   <property name="file.jar.test" value="${dir.jbuild.jar}/${project}-${version}-test.jar"/>
   <property name="file.jar.perf" value="${dir.jbuild.jar}/${project}-${version}-perf.jar"/>
-  <property name="file.dll.main" value="${dir.cbuild.dll}/${project}"/>
+  <property name="file.sharedlibrary.main" value="${dir.cbuild.sharedlibrary}/${project}"/>
 
 
   <!-- CLASSPATHS -->
@@ -153,7 +152,7 @@
     <mkdir dir="${dir.cbuild}"/>
     <mkdir dir="${dir.cbuild.main}"/>
     <mkdir dir="${dir.cbuild.main.jni}"/>
-    <mkdir dir="${dir.cbuild.dll}"/>
+    <mkdir dir="${dir.cbuild.sharedlibrary}"/>
   </target>
 
   <target name="compile.main" depends="create.dirs">
@@ -185,7 +184,7 @@
                  name="msvc"
                  objdir="${dir.cbuild.main.jni}"
                  outtype="shared"
-                 outfile="${file.dll.main}">
+                 outfile="${file.sharedlibrary.main}">
       <includepath path="${dir.cbuild.main.jni};${dir.xs.inc}"/>
       <fileset dir="${dir.src.main.c.jni}" includes="*.c"/>
       <libset dir="${dir.xs.lib}" libs="${dir.xs.libname}"/>
@@ -261,7 +260,7 @@
 
   <target name="run" depends="jni.geno,jar.main">
     <java fork="true" classname="${cn}">
-      <sysproperty key="java.library.path" value="${dir.cbuild.dll}"/>
+      <sysproperty key="java.library.path" value="${dir.cbuild.sharedlibrary}"/>
       <classpath refid="cp.run-main"/>
       <arg line="${args}"/>
     </java>
@@ -269,7 +268,7 @@
 
   <target name="perf" depends="jni.geno,jar.main,jar.perf">
     <java fork="true" classname="${cn}">
-      <sysproperty key="java.library.path" value="${dir.cbuild.dll}"/>
+      <sysproperty key="java.library.path" value="${dir.cbuild.sharedlibrary}"/>
       <classpath refid="cp.run-perf"/>
       <arg line="${args}"/>
     </java>
