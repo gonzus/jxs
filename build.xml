@@ -212,7 +212,7 @@
                  objdir="${dir.cbuild.main.jni}"
                  outtype="shared"
                  outfile="${file.sharedlibrary.main}">
-      <includepath path="${dir.cbuild.main.jni};${dir.xs.inc};dir.jni.headers"/>
+      <includepath path="${dir.cbuild.main.jni};${dir.xs.inc};${dir.jni.headers}"/>
       <fileset dir="${dir.src.main.c.jni}" includes="*.c"/>
       <libset dir="${dir.xs.lib}" libs="${dir.xs.libname}"/>
     </cpptasks:cc>
