@@ -29,6 +29,12 @@ You will need the following:
 4. When using JNI (the supported option), a copy of `cpptasks`, an
    `ant` helper that automates compilation of C code.  I use `v1.0b5`.
 
+   You can run at with `ant -lib lib/ant/cpptasks-1.0b5.jar jar` to use
+   the included `cpptasks`
+5. Look at the `build.<OS>.properties` file for your OS.  Pay
+   particular attention to the value of: dir.jni.headers
+   
+
 Once your environment is set up and you have downloaded `jxs`, you can
 do any of these:
 
@@ -37,7 +43,15 @@ do any of these:
 * `ant run` -- run a specific class in one of the `JAR`s.
 * `ant perf` -- run performance tests.
 
-To run a basic tester class:
+### Debugging the build
+    
+It can be helpful to run the build using `ant -v` to debug compiltion issues.
+
+```bash
+ant -v -lib lib/ant/cpptasks-1.0b5.jar jar
+```
+
+### To run a basic tester class:
 
 `ant -Dcn=io.crossroads.jni.Tester run`
 
