@@ -51,6 +51,7 @@
   <property name="dir.cbuild.sharedlibrary" location="${dir.cbuild}/sharedlibrary"/>
 
   <property name="file.jar.main" value="${dir.jbuild.jar}/${project}-${version}.jar"/>
+  <property name="file.jar.main.sources" value="${dir.jbuild.jar}/${project}-${version}-sources.jar"/>
   <property name="file.jar.test" value="${dir.jbuild.jar}/${project}-${version}-test.jar"/>
   <property name="file.jar.perf" value="${dir.jbuild.jar}/${project}-${version}-perf.jar"/>
   <property name="file.sharedlibrary.main" value="${dir.cbuild.sharedlibrary}/${project}"/>
@@ -228,6 +229,12 @@
     </jar>
   </target>
 
+  <target name="jar.main.sources" depends="jar.main">
+    <jar destfile="${file.jar.main.sources}">
+      <fileset dir="${dir.src.main.java}"/>
+    </jar>
+  </target>
+
   <target name="compile.test" depends="jar.main">
     <mkdir dir="${dir.src.test.java}"/>
     <javac includeantruntime="false"
@@ -263,7 +270,7 @@
   </target>
 
   <target name="compile" depends="jni.geno,compile.main,compile.test,compile.perf"/>
-  <target name="jar" depends="jni.geno,jar.main,jar.test,jar.perf"/>
+  <target name="jar" depends="jni.geno,jar.main,jar.test,jar.perf,jar.main.sources"/>
 
   <target name="test" depends="jar">
     <junit failureproperty="junit.failure">
