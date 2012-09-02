@@ -1,5 +1,12 @@
 #include "XsUtil.h"
 
+#ifdef _WIN32
+  #define __UINT64 unsigned __int64
+#else
+  #include <inttypes.h>
+  #define __UINT64 uint64_t
+#endif
+
 #include "io_crossroads_jni_XsOption.h"
 
 JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsOption_call_1getsockopt_1int(JNIEnv* env,
@@ -94,7 +101,7 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsOption_call_1getsockopt_1long(JN
             jfieldID i_socket = 0;
             long f_socket = 0;
             void* sock = 0;
-            unsigned __int64 oval = 0;
+            __UINT64 oval = 0;
             size_t olen = sizeof(oval);
     
             // The class for the calling object
@@ -263,7 +270,7 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsOption_call_1setsockopt_1long(JN
             jfieldID i_socket = 0;
             long f_socket = 0;
             void* sock = 0;
-            unsigned __int64 oval = 0;
+            __UINT64 oval = 0;
             size_t olen = sizeof(oval);
                 
             // The class for the calling object

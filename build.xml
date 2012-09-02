@@ -8,7 +8,6 @@
 
 
   <!-- PROPERTIES -->
-
   <property name="project" value="${ant.project.name}"/>
 
   <property name="version_major" value="0"/>
@@ -33,10 +32,6 @@
   <property name="class.jni3" value="io.crossroads.jni.XsOption"/>
   <property name="class.jni4" value="io.crossroads.jni.XsConstants"/>
   <property name="class.jni5" value="io.crossroads.jni.XsErrors"/>
-  <property name="dir.xs" location="../libxs"/>
-  <property name="dir.xs.inc" location="${dir.xs}/include"/>
-  <property name="dir.xs.lib" location="${dir.xs}/lib/Win32"/>
-  <property name="dir.xs.libname" value="libxs_d"/>
 
   <property name="dir.src.test" location="${dir.src}/test"/>
   <property name="dir.src.test.java" location="${dir.src.test}/java"/>
@@ -53,12 +48,12 @@
   <property name="dir.cbuild" location="${dir.build}/c"/>
   <property name="dir.cbuild.main" location="${dir.cbuild}/main"/>
   <property name="dir.cbuild.main.jni" location="${dir.cbuild}/main/jni"/>
-  <property name="dir.cbuild.dll" location="${dir.cbuild}/dll"/>
+  <property name="dir.cbuild.sharedlibrary" location="${dir.cbuild}/sharedlibrary"/>
 
   <property name="file.jar.main" value="${dir.jbuild.jar}/${project}-${version}.jar"/>
   <property name="file.jar.test" value="${dir.jbuild.jar}/${project}-${version}-test.jar"/>
   <property name="file.jar.perf" value="${dir.jbuild.jar}/${project}-${version}-perf.jar"/>
-  <property name="file.dll.main" value="${dir.cbuild.dll}/${project}"/>
+  <property name="file.sharedlibrary.main" value="${dir.cbuild.sharedlibrary}/${project}"/>
 
 
   <!-- CLASSPATHS -->
@@ -110,7 +105,6 @@
     <path refid="cp.local-perf"/>
   </path>
 
-
   <path id="cp.compile-main">
     <path refid="cp.local-main"/>
   </path>
@@ -143,8 +137,22 @@
 
 
   <!-- TARGETS -->
+  <target name="init">
+    <condition property="isUnix">
+      <os family="unix" />
+    </condition>
+    <condition property="isWindows">
+      <os family="windows" />
+    </condition>
+  </target>
 
-  <target name="create.dirs">
+  <target name="init.properties" depends="init,load.win.properties,load.unix.properties">
+    <echo level="info">dir.xs.lib=${dir.xs.lib}</echo>
+    <echo level="info">dir.xs.libname=${dir.xs.libname}</echo>
+    <echo level="info">dir.jni.headers=${dir.jni.headers}</echo>
+  </target>
+
+  <target name="create.dirs" depends="init.properties">
     <mkdir dir="${dir.jbuild}"/>
     <mkdir dir="${dir.jbuild.main}"/>
     <mkdir dir="${dir.jbuild.test}"/>
@@ -153,7 +161,7 @@
     <mkdir dir="${dir.cbuild}"/>
     <mkdir dir="${dir.cbuild.main}"/>
     <mkdir dir="${dir.cbuild.main.jni}"/>
-    <mkdir dir="${dir.cbuild.dll}"/>
+    <mkdir dir="${dir.cbuild.sharedlibrary}"/>
   </target>
 
   <target name="compile.main" depends="create.dirs">
@@ -180,17 +188,36 @@
   </target>
 
   <target name="jni.geno" depends="jni.genh">
+    <antcall target="jni.geno.win"/>
+    <antcall target="jni.geno.unix"/>
+  </target>
+
+  <target name="jni.geno.win" depends="jni.genh" if="isWindows">
     <cpptasks:cc warnings="none"
                  subsystem="console"
                  name="msvc"
                  objdir="${dir.cbuild.main.jni}"
                  outtype="shared"
-                 outfile="${file.dll.main}">
+                 outfile="${file.sharedlibrary.main}">
       <includepath path="${dir.cbuild.main.jni};${dir.xs.inc}"/>
       <fileset dir="${dir.src.main.c.jni}" includes="*.c"/>
       <libset dir="${dir.xs.lib}" libs="${dir.xs.libname}"/>
     </cpptasks:cc>
   </target>
+
+  <target name="jni.geno.unix" depends="jni.genh" if="isUnix">
+    <cpptasks:cc warnings="none"
+                 subsystem="console"
+                 name="gcc"
+                 objdir="${dir.cbuild.main.jni}"
+                 outtype="shared"
+                 outfile="${file.sharedlibrary.main}">
+      <includepath path="${dir.cbuild.main.jni};${dir.xs.inc};${dir.jni.headers}"/>
+      <fileset dir="${dir.src.main.c.jni}" includes="*.c"/>
+      <libset dir="${dir.xs.lib}" libs="${dir.xs.libname}"/>
+    </cpptasks:cc>
+  </target>
+
 
   <target name="jar.main" depends="compile.main">
     <jar destfile="${file.jar.main}">
@@ -202,6 +229,7 @@
   </target>
 
   <target name="compile.test" depends="jar.main">
+    <mkdir dir="${dir.src.test.java}"/>
     <javac includeantruntime="false"
            destdir="${dir.jbuild.test}"
            debug="true">
@@ -218,6 +246,7 @@
   </target>
 
   <target name="compile.perf" depends="jar.main">
+    <mkdir dir="${dir.lib.perf}"/>
     <javac includeantruntime="false"
            destdir="${dir.jbuild.perf}"
            debug="true">
@@ -261,7 +290,7 @@
 
   <target name="run" depends="jni.geno,jar.main">
     <java fork="true" classname="${cn}">
-      <sysproperty key="java.library.path" value="${dir.cbuild.dll}"/>
+      <sysproperty key="java.library.path" value="${dir.cbuild.sharedlibrary}"/>
       <classpath refid="cp.run-main"/>
       <arg line="${args}"/>
     </java>
@@ -269,10 +298,19 @@
 
   <target name="perf" depends="jni.geno,jar.main,jar.perf">
     <java fork="true" classname="${cn}">
-      <sysproperty key="java.library.path" value="${dir.cbuild.dll}"/>
+      <sysproperty key="java.library.path" value="${dir.cbuild.sharedlibrary}"/>
       <classpath refid="cp.run-perf"/>
       <arg line="${args}"/>
     </java>
+  </target>
+
+  <target name="load.unix.properties" if="isUnix">
+    <echo>Loading addtional properties from: build.unix.properties</echo>
+    <property file="build.unix.properties"/>
+  </target>
+  <target name="load.win.properties" if="isWindows">
+    <echo>Loading addtional properties from: build.windows.properties</echo>
+    <property file="build.windows.properties"/>
   </target>
 
   <target name="all" depends="test"/>
