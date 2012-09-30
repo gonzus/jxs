@@ -269,6 +269,43 @@ JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1recv(JNIEnv* env,
     return ret;
 }
 
+JNIEXPORT jint JNICALL Java_io_crossroads_jni_XsLibrary_xs_1getsockopt_1int(JNIEnv* env,
+                                                                 jobject obj,
+                                                                 jlong socket,
+                                                                 jint option,
+                                                                 jobject optval)
+{
+    void* sock = 0;
+    jbyte* buf = 0;
+    int ret = 0;
+    int ioptval = 0;
+    jclass coptval = 0;
+    jfieldID foptval = 0;
+    size_t sz = sizeof(ioptval);
+
+    coptval = (*env)->GetObjectClass(env, optval);
+    XS_ASSERT(coptval);
+
+    foptval = (*env)->GetFieldID(env, coptval, "value", "I");
+    XS_ASSERT(foptval);
+
+    sock = (void*) socket;
+    XS_ASSERT(sock);
+
+    ret = xs_getsockopt(sock, option, &ioptval, &sz);
+
+#if defined(XS_DEBUG) && (XS_DEBUG > 0)
+    fprintf(stderr,
+            "xs_getsockopt(%p, %d, %p, %d) => %d\n",
+            sock, option, buf, optval, ret);
+#endif
+
+    (*env)->SetIntField(env, optval, foptval, ioptval);
+
+    return ret;
+}
+
+
 JNIEXPORT jlong JNICALL Java_io_crossroads_jni_XsLibrary_xs_1stopwatch_1start(JNIEnv* env,
                                                                               jobject obj)
 {
