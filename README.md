@@ -45,7 +45,7 @@ do any of these:
 
 ### Debugging the build
     
-It can be helpful to run the build using `ant -v` to debug compiltion issues.
+It can be helpful to run the build using `ant -v` to debug compilation issues.
 
 ```bash
 ant -v -lib lib/ant/cpptasks-1.0b5.jar jar
