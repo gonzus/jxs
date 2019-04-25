@@ -47,6 +47,10 @@ public class XsLibrary {
                               int length,
                               int flags);
 
+    public native int xs_getsockopt_int(long socket,
+                                    int option,
+                                    Integer optval);
+
     /*
      * TODO:
      
